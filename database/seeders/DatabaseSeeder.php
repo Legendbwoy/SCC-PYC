@@ -14,6 +14,7 @@ class DatabaseSeeder extends Seeder
             RolesAndPermissionsSeeder::class,
             SystemSettingsSeeder::class,
             NotificationTemplatesSeeder::class,
+            MemberGroupsSeeder::class,
         ]);
     }
 }

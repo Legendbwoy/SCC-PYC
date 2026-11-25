@@ -5,6 +5,10 @@ declare(strict_types=1);
 namespace App\Providers;
 
 use App\Models\User;
+use App\Modules\Membership\Contracts\GoogleSheetsClientInterface;
+use App\Modules\Membership\Models\Member;
+use App\Modules\Membership\Policies\MemberPolicy;
+use App\Modules\Membership\Services\GoogleSheetsService;
 use App\Modules\Notifications\Contracts\EmailProviderInterface;
 use App\Modules\Notifications\Contracts\SmsGatewayInterface;
 use App\Modules\Notifications\Providers\Email\SmtpEmailProvider;
@@ -30,6 +34,7 @@ class AppServiceProvider extends ServiceProvider
     {
         $this->app->bind(SmsGatewayInterface::class, GenericHttpSmsGateway::class);
         $this->app->bind(EmailProviderInterface::class, SmtpEmailProvider::class);
+        $this->app->bind(GoogleSheetsClientInterface::class, GoogleSheetsService::class);
     }
 
     public function boot(): void
@@ -54,6 +59,7 @@ class AppServiceProvider extends ServiceProvider
         Gate::policy(User::class, UserPolicy::class);
         Gate::policy(AuditLog::class, AuditLogPolicy::class);
         Gate::policy(SystemSetting::class, SystemSettingPolicy::class);
+        Gate::policy(Member::class, MemberPolicy::class);
 
         Event::subscribe(SecurityEventSubscriber::class);
 

@@ -4,9 +4,11 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use App\Modules\Membership\Models\MemberAccount;
 use App\Support\Security\PycRole;
 use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Fortify\TwoFactorAuthenticatable;
@@ -92,5 +94,13 @@ class User extends Authenticatable
         $role = $this->getRoleNames()->first();
 
         return $role ?? PycRole::Member->value;
+    }
+
+    /**
+     * @return HasOne<MemberAccount, $this>
+     */
+    public function memberAccount(): HasOne
+    {
+        return $this->hasOne(MemberAccount::class, 'user_id');
     }
 }

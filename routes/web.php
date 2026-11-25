@@ -5,8 +5,11 @@ declare(strict_types=1);
 use App\Http\Controllers\Admin\AuditLogController;
 use App\Http\Controllers\Admin\SystemSettingController;
 use App\Http\Controllers\Admin\UserManagementController;
+use App\Http\Controllers\Auth\MemberInvitationController;
 use App\Http\Controllers\Portal\CommunicationsController;
 use App\Http\Controllers\Portal\DashboardController;
+use App\Http\Controllers\Portal\GoogleSyncController;
+use App\Http\Controllers\Portal\MembershipController;
 use App\Http\Controllers\Portal\ModuleOverviewController;
 use App\Http\Controllers\Portal\NotificationPreferenceController;
 use App\Http\Controllers\Portal\SecurityProfileController;
@@ -19,12 +22,17 @@ Route::get('/', static function () {
         : redirect()->route('login');
 })->name('home');
 
+// Public single-use invitation activation routes (Spec Section 5.1 & 5.2)
+Route::get('/invitations/{token}', [MemberInvitationController::class, 'show'])
+    ->name('invitations.show');
+Route::post('/invitations/{token}', [MemberInvitationController::class, 'store'])
+    ->middleware('throttle:login')
+    ->name('invitations.accept');
+
 Route::middleware(['auth', 'pyc.active'])->group(function (): void {
-    // Account & 2FA Security setup route (accessible before 2FA confirmation so officers can enroll)
     Route::get('/profile/security', [SecurityProfileController::class, 'show'])
         ->name('profile.security');
 
-    // Protected portal routes requiring confirmed 2FA for designated administrative/executive roles
     Route::middleware(['pyc.2fa'])->group(function (): void {
         Route::get('/dashboard', DashboardController::class)->name('dashboard');
 
@@ -33,6 +41,28 @@ Route::middleware(['auth', 'pyc.active'])->group(function (): void {
         Route::patch('/profile/notifications', [NotificationPreferenceController::class, 'update'])
             ->name('profile.notifications.update');
 
+        // Membership & Google Forms Integration (Sprint 2)
+        Route::prefix('membership')->name('membership.')->group(function (): void {
+            Route::get('/', [MembershipController::class, 'index'])->name('index');
+            Route::post('/', [MembershipController::class, 'store'])->name('store');
+
+            Route::get('/google-sync', [GoogleSyncController::class, 'index'])->name('google-sync');
+            Route::put('/google-sync/connection', [GoogleSyncController::class, 'updateConnection'])
+                ->name('google-sync.connection');
+            Route::post('/google-sync/run', [GoogleSyncController::class, 'runSync'])
+                ->name('google-sync.run');
+            Route::post('/google-sync/{syncLog}/retry', [GoogleSyncController::class, 'retrySync'])
+                ->name('google-sync.retry');
+
+            Route::get('/{member}', [MembershipController::class, 'show'])->name('show');
+            Route::patch('/{member}', [MembershipController::class, 'update'])->name('update');
+            Route::post('/{member}/approve', [MembershipController::class, 'approve'])->name('approve');
+            Route::post('/{member}/reject', [MembershipController::class, 'reject'])->name('reject');
+            Route::post('/{member}/archive', [MembershipController::class, 'archive'])->name('archive');
+            Route::post('/{member}/invite', [MembershipController::class, 'invite'])->name('invite');
+        });
+
+        // Communications Hub (Milestone N1)
         Route::prefix('communications')->name('communications.')->group(function (): void {
             Route::get('/', [CommunicationsController::class, 'index'])->name('index');
             Route::get('/templates', [CommunicationsController::class, 'templates'])->name('templates');

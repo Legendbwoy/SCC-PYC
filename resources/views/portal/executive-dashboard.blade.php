@@ -12,15 +12,17 @@
         </div>
 
         <div class="bg-white rounded-2xl border border-slate-200 p-5 shadow-2xs">
-            <p class="text-xs font-semibold uppercase tracking-wider text-slate-500">Portal Accounts</p>
-            <p class="mt-2 text-2xl font-bold text-slate-900">{{ number_format($stats['total_users']) }}</p>
-            <p class="mt-1 text-xs text-slate-500">{{ number_format($stats['active_officers']) }} active council officers</p>
+            <p class="text-xs font-semibold uppercase tracking-wider text-slate-500">Approved PYC Members</p>
+            <p class="mt-2 text-2xl font-bold text-slate-900">{{ number_format($stats['active_members']) }}</p>
+            <p class="mt-1 text-xs {{ $stats['pending_members'] > 0 ? 'text-amber-700 font-semibold' : 'text-slate-500' }}">
+                {{ number_format($stats['pending_members']) }} pending Secretary review
+            </p>
         </div>
 
         <div class="bg-white rounded-2xl border border-slate-200 p-5 shadow-2xs">
-            <p class="text-xs font-semibold uppercase tracking-wider text-slate-500">RBAC Security Matrix</p>
-            <p class="mt-2 text-2xl font-bold text-slate-900">{{ $stats['roles_configured'] }} Roles</p>
-            <p class="mt-1 text-xs text-slate-500">{{ $stats['permissions_configured'] }} granular permissions active</p>
+            <p class="text-xs font-semibold uppercase tracking-wider text-slate-500">Portal Accounts</p>
+            <p class="mt-2 text-2xl font-bold text-slate-900">{{ number_format($stats['total_users']) }}</p>
+            <p class="mt-1 text-xs text-slate-500">{{ number_format($stats['active_officers']) }} active council officers</p>
         </div>
 
         <div class="bg-white rounded-2xl border border-slate-200 p-5 shadow-2xs">

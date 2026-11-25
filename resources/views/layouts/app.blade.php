@@ -52,10 +52,10 @@
                     <p class="px-3 text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2">Council Operations</p>
                     <div class="space-y-1">
                         @can('members.view')
-                            <a href="{{ route('modules.overview', 'membership') }}"
-                               class="flex items-center justify-between px-3 py-2 rounded-xl transition {{ request()->is('modules/membership') ? 'bg-teal-600/20 text-teal-300' : 'text-slate-300 hover:bg-slate-800 hover:text-white' }}">
+                            <a href="{{ route('membership.index') }}"
+                               class="flex items-center justify-between px-3 py-2 rounded-xl transition {{ request()->routeIs('membership.*') ? 'bg-teal-600/20 text-teal-300' : 'text-slate-300 hover:bg-slate-800 hover:text-white' }}">
                                 <span>Membership &amp; Sync</span>
-                                <span class="text-[10px] px-1.5 py-0.5 rounded bg-slate-800 text-slate-400">S2</span>
+                                <span class="text-[10px] px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-300 font-semibold">LIVE</span>
                             </a>
                         @endcan
                         @can('dues.view')

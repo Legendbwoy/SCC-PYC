@@ -6,14 +6,13 @@ namespace App\Http\Controllers\Portal;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use App\Modules\Membership\Models\Member;
 use App\Support\Audit\Models\AuditLog;
 use App\Support\Security\PycPermission;
 use App\Support\Security\PycRole;
 use App\Support\Shared\Money;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\Request;
-use Spatie\Permission\Models\Permission;
-use Spatie\Permission\Models\Role;
 
 class DashboardController extends Controller
 {
@@ -28,8 +27,11 @@ class DashboardController extends Controller
         );
 
         if (! $user->isExecutiveOfficer()) {
+            $memberRecord = $user->memberAccount?->member()->with('groups')->first();
+
             return view('portal.member-dashboard', [
                 'user' => $user,
+                'member' => $memberRecord,
                 'monthlyDues' => $monthlyDues,
             ]);
         }
@@ -42,10 +44,10 @@ class DashboardController extends Controller
             'user' => $user,
             'monthlyDues' => $monthlyDues,
             'stats' => [
+                'active_members' => Member::query()->where('status', 'active')->count(),
+                'pending_members' => Member::query()->where('status', 'pending')->count(),
                 'total_users' => User::query()->count(),
                 'active_officers' => User::role(PycRole::executiveRoleNames())->where('status', 'active')->count(),
-                'roles_configured' => Role::query()->count(),
-                'permissions_configured' => Permission::query()->count(),
             ],
             'recentAuditLogs' => $recentAuditLogs,
         ]);

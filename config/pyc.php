@@ -38,7 +38,7 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Membership Rules (Spec Section 5 & 18.1)
+    | Membership Rules & Google Sheets Sync (Spec Section 5 & 18.1)
     |--------------------------------------------------------------------------
     */
     'membership' => [
@@ -47,6 +47,29 @@ return [
         'account_activation' => 'invitation',
         'auto_create_portal_account' => false,
         'invitation_ttl_hours' => (int) env('PYC_INVITATION_TTL_HOURS', 72),
+        'google_sheets' => [
+            'spreadsheet_id' => env('GOOGLE_SHEETS_SPREADSHEET_ID', ''),
+            'sheet_range' => env('GOOGLE_SHEETS_RANGE', 'Form Responses 1!A1:Z2000'),
+            'service_account_json_path' => env('GOOGLE_SERVICE_ACCOUNT_JSON_PATH', ''),
+            'api_key' => env('GOOGLE_SHEETS_API_KEY', ''),
+            'default_field_mapping' => [
+                'external_response_id' => ['Response ID', 'response_id'],
+                'timestamp' => ['Timestamp', 'Submitted At', 'timestamp'],
+                'first_name' => ['First Name', 'Given Name', 'first_name'],
+                'middle_name' => ['Middle Name', 'Other Names', 'middle_name'],
+                'last_name' => ['Last Name', 'Surname', 'Family Name', 'last_name'],
+                'full_name' => ['Full Name', 'Name', 'full_name'],
+                'phone' => ['Phone Number', 'Phone', 'Mobile Number', 'WhatsApp / Phone', 'phone'],
+                'email' => ['Email Address', 'Email', 'email'],
+                'date_of_birth' => ['Date of Birth', 'DOB', 'Birth Date', 'date_of_birth'],
+                'gender' => ['Gender', 'Sex', 'gender'],
+                'address' => ['Residential Address', 'Address', 'Location', 'address'],
+                'occupation' => ['Occupation', 'Profession / School', 'occupation'],
+                'group_name' => ['Youth Group / Society', 'Group', 'Ministry', 'group'],
+                'emergency_contact_name' => ['Emergency Contact Name', 'Guardian Name', 'emergency_contact_name'],
+                'emergency_contact_phone' => ['Emergency Contact Phone', 'Guardian Phone', 'emergency_contact_phone'],
+            ],
+        ],
     ],
 
     /*

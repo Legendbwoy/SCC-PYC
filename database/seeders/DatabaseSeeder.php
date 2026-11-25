@@ -16,6 +16,7 @@ class DatabaseSeeder extends Seeder
             NotificationTemplatesSeeder::class,
             MemberGroupsSeeder::class,
             ContributionsSeeder::class,
+            AccountingSeeder::class,
         ]);
     }
 }

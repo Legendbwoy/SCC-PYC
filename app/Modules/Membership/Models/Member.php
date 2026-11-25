@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace App\Modules\Membership\Models;
 
 use App\Modules\Contributions\Models\MemberObligation;
+use App\Modules\Payments\Models\Payment;
+use App\Modules\Payments\Models\Receipt;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
@@ -115,5 +117,21 @@ class Member extends Model
     public function obligations(): HasMany
     {
         return $this->hasMany(MemberObligation::class)->orderBy('period_key');
+    }
+
+    /**
+     * @return HasMany<Payment, $this>
+     */
+    public function payments(): HasMany
+    {
+        return $this->hasMany(Payment::class)->latest('id');
+    }
+
+    /**
+     * @return HasMany<Receipt, $this>
+     */
+    public function receipts(): HasMany
+    {
+        return $this->hasMany(Receipt::class)->latest('id');
     }
 }

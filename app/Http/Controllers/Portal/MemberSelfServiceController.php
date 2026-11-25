@@ -8,18 +8,19 @@ use App\Http\Controllers\Controller;
 use App\Models\User;
 use App\Modules\Contributions\Services\OutstandingBalanceService;
 use App\Modules\Notifications\Services\RecipientResolver;
+use App\Modules\Payments\Models\Payment;
+use App\Modules\Payments\Services\PaymentService;
 use App\Support\Audit\AuditLogger;
+use App\Support\Shared\Money;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 
-/**
- * Sprint 3 Member Portal Self-Service Profile & Personal Dues Statements (Spec Section 3.5 & 16).
- */
 class MemberSelfServiceController extends Controller
 {
     public function __construct(
         private readonly OutstandingBalanceService $balanceService,
+        private readonly PaymentService $paymentService,
         private readonly RecipientResolver $recipientResolver,
         private readonly AuditLogger $auditLogger,
     ) {}
@@ -108,5 +109,70 @@ class MemberSelfServiceController extends Controller
             'member' => $member,
             'statement' => $statement,
         ]);
+    }
+
+    public function payments(Request $request): View
+    {
+        /** @var User $user */
+        $user = $request->user();
+        $member = $user->memberAccount?->member;
+
+        $payments = $member !== null
+            ? Payment::query()->with('receipt')->where('member_id', $member->id)->latest('id')->paginate(15)
+            : collect();
+
+        $statement = $member !== null ? $this->balanceService->memberStatement($member) : null;
+
+        return view('portal.member.payments', [
+            'user' => $user,
+            'member' => $member,
+            'payments' => $payments,
+            'statement' => $statement,
+        ]);
+    }
+
+    public function initializePayment(Request $request): RedirectResponse
+    {
+        /** @var User $user */
+        $user = $request->user();
+        $member = $user->memberAccount?->member;
+        abort_if($member === null, 403);
+
+        $validated = $request->validate([
+            'amount_ghs' => ['required', 'string', 'regex:/^\d+(?:\.\d{1,2})?$/'],
+        ]);
+
+        $money = Money::fromMajorString($validated['amount_ghs'], 'GHS');
+
+        $checkout = $this->paymentService->initializeOnlinePayment(
+            member: $member,
+            amountPesewas: $money->pesewas,
+            actor: $user,
+        );
+
+        return redirect()->away($checkout['authorization_url']);
+    }
+
+    public function paymentCallback(Request $request): RedirectResponse
+    {
+        /** @var User $user */
+        $user = $request->user();
+        $reference = $request->string('reference')->trim()->toString();
+
+        if ($reference === '') {
+            return redirect()->route('member.payments');
+        }
+
+        try {
+            $verified = $this->paymentService->verifyOnlinePayment($reference, $user);
+
+            return redirect()
+                ->route('member.payments')
+                ->with('status', "Payment {$verified->reference} confirmed! Official Receipt {$verified->receipt?->receipt_number} has been issued.");
+        } catch (\Throwable $e) {
+            return redirect()
+                ->route('member.payments')
+                ->withErrors(['payment' => 'Could not verify online payment automatically: '.$e->getMessage()]);
+        }
     }
 }

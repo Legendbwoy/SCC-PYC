@@ -6,14 +6,17 @@ use App\Http\Controllers\Admin\AuditLogController;
 use App\Http\Controllers\Admin\SystemSettingController;
 use App\Http\Controllers\Admin\UserManagementController;
 use App\Http\Controllers\Auth\MemberInvitationController;
+use App\Http\Controllers\Portal\AccountingPortalController;
 use App\Http\Controllers\Portal\CommunicationsController;
 use App\Http\Controllers\Portal\ContributionsController;
 use App\Http\Controllers\Portal\DashboardController;
+use App\Http\Controllers\Portal\ExpensesPortalController;
 use App\Http\Controllers\Portal\GoogleSyncController;
 use App\Http\Controllers\Portal\MemberSelfServiceController;
 use App\Http\Controllers\Portal\MembershipController;
 use App\Http\Controllers\Portal\ModuleOverviewController;
 use App\Http\Controllers\Portal\NotificationPreferenceController;
+use App\Http\Controllers\Portal\PaymentsPortalController;
 use App\Http\Controllers\Portal\SecurityProfileController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
@@ -24,7 +27,6 @@ Route::get('/', static function () {
         : redirect()->route('login');
 })->name('home');
 
-// Public single-use invitation activation routes (Spec Section 5.1 & 5.2)
 Route::get('/invitations/{token}', [MemberInvitationController::class, 'show'])
     ->name('invitations.show');
 Route::post('/invitations/{token}', [MemberInvitationController::class, 'store'])
@@ -43,11 +45,14 @@ Route::middleware(['auth', 'pyc.active'])->group(function (): void {
         Route::patch('/profile/notifications', [NotificationPreferenceController::class, 'update'])
             ->name('profile.notifications.update');
 
-        // Member Portal Self-Service Routes (Sprint 3)
+        // Member Portal Self-Service Routes (Sprint 3 & 5)
         Route::prefix('my')->name('member.')->group(function (): void {
             Route::get('/profile', [MemberSelfServiceController::class, 'profile'])->name('profile');
             Route::patch('/profile', [MemberSelfServiceController::class, 'updateProfile'])->name('profile.update');
             Route::get('/dues', [MemberSelfServiceController::class, 'dues'])->name('dues');
+            Route::get('/payments', [MemberSelfServiceController::class, 'payments'])->name('payments');
+            Route::post('/payments/initialize', [MemberSelfServiceController::class, 'initializePayment'])->name('payments.initialize');
+            Route::get('/payments/callback', [MemberSelfServiceController::class, 'paymentCallback'])->name('payments.callback');
         });
 
         // Membership & Google Forms Integration (Sprint 2)
@@ -79,6 +84,34 @@ Route::middleware(['auth', 'pyc.active'])->group(function (): void {
             Route::post('/campaigns', [ContributionsController::class, 'storeCampaign'])->name('campaigns.store');
             Route::post('/obligations/{obligation}/adjust', [ContributionsController::class, 'adjustObligation'])
                 ->name('obligations.adjust');
+        });
+
+        // Payments, Maker-Checker Cash Approvals & Official PDF Receipts (Sprint 5)
+        Route::prefix('payments')->name('payments.')->group(function (): void {
+            Route::get('/', [PaymentsPortalController::class, 'index'])->name('index');
+            Route::post('/cash', [PaymentsPortalController::class, 'recordCash'])->name('cash.store');
+            Route::post('/settlements', [PaymentsPortalController::class, 'storeSettlement'])->name('settlements.store');
+            Route::post('/{payment}/approve', [PaymentsPortalController::class, 'approveCash'])->name('approve');
+            Route::post('/{payment}/reject', [PaymentsPortalController::class, 'rejectCash'])->name('reject');
+            Route::get('/{payment}/receipt/pdf', [PaymentsPortalController::class, 'downloadReceiptPdf'])->name('receipt.pdf');
+        });
+
+        // Double-Entry Accounting & Period Controls (Sprint 6)
+        Route::prefix('accounting')->name('accounting.')->group(function (): void {
+            Route::get('/', [AccountingPortalController::class, 'index'])->name('index');
+            Route::post('/journals/{journal}/reverse', [AccountingPortalController::class, 'reverseJournal'])
+                ->name('journals.reverse');
+            Route::post('/periods/{period}/close', [AccountingPortalController::class, 'closePeriod'])
+                ->name('periods.close');
+        });
+
+        // Expense Management & Dual Authorization (Sprint 6)
+        Route::prefix('expenses')->name('expenses.')->group(function (): void {
+            Route::get('/', [ExpensesPortalController::class, 'index'])->name('index');
+            Route::post('/', [ExpensesPortalController::class, 'store'])->name('store');
+            Route::post('/{expense}/approve', [ExpensesPortalController::class, 'approve'])->name('approve');
+            Route::post('/{expense}/reject', [ExpensesPortalController::class, 'reject'])->name('reject');
+            Route::post('/{expense}/pay', [ExpensesPortalController::class, 'pay'])->name('pay');
         });
 
         // Communications Hub (Milestone N1)

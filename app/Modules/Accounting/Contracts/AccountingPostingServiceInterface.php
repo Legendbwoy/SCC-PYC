@@ -6,6 +6,7 @@ namespace App\Modules\Accounting\Contracts;
 
 use App\Models\User;
 use App\Modules\Accounting\DTOs\JournalLineData;
+use App\Modules\Accounting\Models\JournalEntry;
 use DateTimeInterface;
 
 /**
@@ -32,9 +33,9 @@ interface AccountingPostingServiceInterface
         DateTimeInterface $entryDate,
         string $narration,
         array $lines,
-        User $actor,
+        ?User $actor = null,
         ?string $idempotencyKey = null,
-    ): mixed;
+    ): JournalEntry;
 
     /**
      * Creates an immutable reversing journal entry for a previously posted journal.
@@ -43,5 +44,5 @@ interface AccountingPostingServiceInterface
         int $journalEntryId,
         string $reason,
         User $actor,
-    ): mixed;
+    ): JournalEntry;
 }

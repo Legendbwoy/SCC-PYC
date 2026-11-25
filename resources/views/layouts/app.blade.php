@@ -55,6 +55,10 @@
                            class="flex items-center justify-between px-3 py-2 rounded-xl font-medium transition {{ request()->routeIs('member.dues*') ? 'bg-teal-600/20 text-teal-300' : 'text-slate-300 hover:bg-slate-800 hover:text-white' }}">
                             <span>My Dues &amp; Statement</span>
                         </a>
+                        <a href="{{ route('member.payments') }}"
+                           class="flex items-center justify-between px-3 py-2 rounded-xl font-medium transition {{ request()->routeIs('member.payments*') ? 'bg-teal-600/20 text-teal-300' : 'text-slate-300 hover:bg-slate-800 hover:text-white' }}">
+                            <span>My Payments &amp; Receipts</span>
+                        </a>
                     @endif
                 </div>
             </div>
@@ -78,24 +82,24 @@
                             </a>
                         @endcan
                         @can('payments.view')
-                            <a href="{{ route('modules.overview', 'payments') }}"
-                               class="flex items-center justify-between px-3 py-2 rounded-xl transition {{ request()->is('modules/payments') ? 'bg-teal-600/20 text-teal-300' : 'text-slate-300 hover:bg-slate-800 hover:text-white' }}">
+                            <a href="{{ route('payments.index') }}"
+                               class="flex items-center justify-between px-3 py-2 rounded-xl transition {{ request()->routeIs('payments.*') ? 'bg-teal-600/20 text-teal-300' : 'text-slate-300 hover:bg-slate-800 hover:text-white' }}">
                                 <span>Payments &amp; Receipts</span>
-                                <span class="text-[10px] px-1.5 py-0.5 rounded bg-slate-800 text-slate-400">S5</span>
+                                <span class="text-[10px] px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-300 font-semibold">LIVE</span>
                             </a>
                         @endcan
                         @can('accounting.view')
-                            <a href="{{ route('modules.overview', 'accounting') }}"
-                               class="flex items-center justify-between px-3 py-2 rounded-xl transition {{ request()->is('modules/accounting') ? 'bg-teal-600/20 text-teal-300' : 'text-slate-300 hover:bg-slate-800 hover:text-white' }}">
+                            <a href="{{ route('accounting.index') }}"
+                               class="flex items-center justify-between px-3 py-2 rounded-xl transition {{ request()->routeIs('accounting.*') ? 'bg-teal-600/20 text-teal-300' : 'text-slate-300 hover:bg-slate-800 hover:text-white' }}">
                                 <span>Accounting Ledger</span>
-                                <span class="text-[10px] px-1.5 py-0.5 rounded bg-slate-800 text-slate-400">S6</span>
+                                <span class="text-[10px] px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-300 font-semibold">LIVE</span>
                             </a>
                         @endcan
                         @can('expenses.view')
-                            <a href="{{ route('modules.overview', 'expenses') }}"
-                               class="flex items-center justify-between px-3 py-2 rounded-xl transition {{ request()->is('modules/expenses') ? 'bg-teal-600/20 text-teal-300' : 'text-slate-300 hover:bg-slate-800 hover:text-white' }}">
+                            <a href="{{ route('expenses.index') }}"
+                               class="flex items-center justify-between px-3 py-2 rounded-xl transition {{ request()->routeIs('expenses.*') ? 'bg-teal-600/20 text-teal-300' : 'text-slate-300 hover:bg-slate-800 hover:text-white' }}">
                                 <span>Expenses</span>
-                                <span class="text-[10px] px-1.5 py-0.5 rounded bg-slate-800 text-slate-400">S6</span>
+                                <span class="text-[10px] px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-300 font-semibold">LIVE</span>
                             </a>
                         @endcan
                         <a href="{{ route('modules.overview', 'events') }}"

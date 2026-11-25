@@ -26,14 +26,14 @@
                     <x-pyc-logo variant="dark" subtitle="Parish Youth Council" />
                 </a>
 
-                <div class="hidden md:flex items-center gap-8 text-sm font-medium text-sky-100">
+                <div class="hidden md:flex items-center gap-7 text-sm font-medium text-sky-100">
                     <a href="#home" class="text-white font-semibold hover:text-[#F5C542] transition">Home</a>
                     <a href="#about" class="hover:text-[#F5C542] transition">About</a>
+                    <a href="#executives" class="hover:text-[#F5C542] transition">Executives</a>
                     <a href="#events" class="hover:text-[#F5C542] transition">Events</a>
                     <a href="#gallery" class="hover:text-[#F5C542] transition">Gallery</a>
                     <a href="#membership" class="hover:text-[#F5C542] transition">Membership</a>
                     <a href="#support" class="hover:text-[#F5C542] transition">Give</a>
-                    <a href="#contact" class="hover:text-[#F5C542] transition">Contact</a>
                 </div>
 
                 <div class="flex items-center gap-3">
@@ -212,6 +212,68 @@
                     </div>
                 @endforelse
             </div>
+        </section>
+
+        <!-- Know Your Executives (KYE) Showcase -->
+        <section id="executives" class="space-y-6">
+            <div class="flex flex-wrap items-end justify-between gap-4">
+                <div>
+                    <span class="text-xs font-bold uppercase tracking-wider text-[#1E549F]">Council Leadership</span>
+                    <h2 class="mt-1 text-2xl sm:text-3xl font-extrabold text-[#0B2545]">Know Your Executives</h2>
+                    <p class="mt-1 text-sm text-slate-600">
+                        Meet the chaplains and elected youth council officers serving {{ $pycBranding['parish_name'] ?? 'St. Cecilia Catholic Church' }}.
+                    </p>
+                </div>
+                @auth
+                    @if(auth()->user()->isExecutiveOfficer())
+                        <a href="{{ route('admin.executives.index') }}" class="text-xs font-bold text-[#1E549F] hover:underline">
+                            Manage Executives &rarr;
+                        </a>
+                    @endif
+                @endauth
+            </div>
+
+            @if(isset($executives) && $executives->isNotEmpty())
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                    @foreach($executives as $exec)
+                        <div class="pyc-card overflow-hidden group hover:-translate-y-0.5 transition duration-200 flex flex-col">
+                            <div class="relative aspect-[4/3.6] bg-gradient-to-br from-[#081F3F] via-[#0F2D59] to-[#1D56A6] flex items-center justify-center overflow-hidden">
+                                @if($exec->photoUrl())
+                                    <img src="{{ $exec->photoUrl() }}"
+                                         alt="{{ $exec->full_name }} — {{ $exec->position }}"
+                                         class="h-full w-full object-cover group-hover:scale-105 transition duration-300">
+                                @else
+                                    <div class="text-center select-none space-y-2">
+                                        <div class="mx-auto h-20 w-20 rounded-full bg-white/15 ring-2 ring-[#F5C542]/80 flex items-center justify-center text-2xl font-extrabold text-white shadow-md">
+                                            {{ $exec->initials() }}
+                                        </div>
+                                        <p class="text-[11px] font-semibold tracking-wide text-sky-200/85">SCC-PYC</p>
+                                    </div>
+                                @endif
+                                <div class="absolute bottom-3 left-3">
+                                    <span class="inline-block px-3 py-1 rounded-full bg-[#F5C542] text-[#0B2545] text-xs font-extrabold shadow-sm">
+                                        {{ $exec->position }}
+                                    </span>
+                                </div>
+                            </div>
+
+                            <div class="p-5 space-y-1.5 flex-1">
+                                <h3 class="text-lg font-extrabold text-[#0B2545]">{{ $exec->full_name }}</h3>
+                                @if($exec->tenure)
+                                    <p class="text-xs font-semibold text-[#1E549F]">{{ $exec->tenure }}</p>
+                                @endif
+                                @if($exec->bio)
+                                    <p class="text-xs text-slate-600 leading-relaxed pt-1">{{ $exec->bio }}</p>
+                                @endif
+                            </div>
+                        </div>
+                    @endforeach
+                </div>
+            @else
+                <div class="pyc-card p-8 text-center text-sm text-slate-500">
+                    Executive Council profiles are being updated by the Parish Youth Council Secretariat.
+                </div>
+            @endif
         </section>
 
         <!-- Public Event & Fellowship Photo Gallery -->

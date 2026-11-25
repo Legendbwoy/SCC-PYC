@@ -3,6 +3,11 @@
     'heading' => 'Event Gallery & Image Management',
     'subheading' => 'Upload and curate parish youth event photo galleries, homepage featured moments, and official site branding images.',
 ])
+    @slot('headerActions')
+        <a href="{{ route('admin.executives.index') }}" class="btn-pyc-outline py-2 px-4 text-xs">
+            Manage Know Your Executives (KYE) &rarr;
+        </a>
+    @endslot
     <!-- 4 Pastel KPI Summary Cards -->
     <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
         <div class="pyc-kpi-blue">

@@ -9,6 +9,7 @@ use App\Modules\Events\Models\PycEvent;
 use App\Modules\Membership\Enums\MemberStatus;
 use App\Modules\Membership\Models\Member;
 use App\Modules\Membership\Models\MemberAccount;
+use App\Support\Media\Models\ExecutiveProfile;
 use App\Support\Security\PycRole;
 use Illuminate\Database\Seeder;
 
@@ -160,5 +161,59 @@ class DefaultUsersSeeder extends Seeder
                 'created_by' => $secretary?->id,
             ]
         );
+
+        $tenure = now()->year.' – '.(now()->year + 2).' Executive Council';
+        $defaultExecutives = [
+            [
+                'full_name' => 'Rev. Fr. Anthony Mensah',
+                'position' => 'Parish Youth Chaplain',
+                'bio' => 'Spiritual director guiding St. Cecilia youth in faith formation, liturgy, and Catholic leadership.',
+                'sort_order' => 1,
+            ],
+            [
+                'full_name' => 'Michael Osei',
+                'position' => 'PYC President',
+                'bio' => 'Presiding over council governance, parish youth ministries, and deanery representation.',
+                'sort_order' => 2,
+            ],
+            [
+                'full_name' => 'Grace Boateng',
+                'position' => 'Vice President',
+                'bio' => 'Coordinating youth societies, committees, and spiritual renewal initiatives.',
+                'sort_order' => 3,
+            ],
+            [
+                'full_name' => 'Sarah Mensah',
+                'position' => 'General Secretary',
+                'bio' => 'Managing official membership records, council correspondence, and parish communications.',
+                'sort_order' => 4,
+            ],
+            [
+                'full_name' => 'David Adjei',
+                'position' => 'Treasurer',
+                'bio' => 'Custodian of council funds, disbursements, and transparent financial stewardship.',
+                'sort_order' => 5,
+            ],
+            [
+                'full_name' => 'Kwame Asante',
+                'position' => 'Financial Secretary',
+                'bio' => 'Overseeing monthly youth dues, parish contribution campaigns, and official member receipts.',
+                'sort_order' => 6,
+            ],
+        ];
+
+        foreach ($defaultExecutives as $execItem) {
+            ExecutiveProfile::query()->firstOrCreate(
+                ['position' => $execItem['position']],
+                [
+                    'full_name' => $execItem['full_name'],
+                    'tenure' => $tenure,
+                    'bio' => $execItem['bio'],
+                    'sort_order' => $execItem['sort_order'],
+                    'is_active' => true,
+                    'updated_by' => $secretary?->id,
+                ]
+            );
+        }
     }
 }

@@ -8,6 +8,7 @@ use App\Models\User;
 use App\Modules\Events\Models\PycEvent;
 use App\Modules\Membership\Enums\MemberStatus;
 use App\Modules\Membership\Models\Member;
+use App\Support\Media\Models\ExecutiveProfile;
 use App\Support\Media\Models\MediaAsset;
 use App\Support\Security\PycRole;
 use Database\Seeders\DatabaseSeeder;
@@ -161,5 +162,76 @@ class MediaAndEventGalleryTest extends TestCase
             ->assertRedirect();
 
         $this->assertNotNull($member->fresh()?->photo_path);
+    }
+
+    public function test_know_your_executives_crud_displays_on_landing_page_and_enforces_permissions(): void
+    {
+        Storage::fake('public');
+
+        $admin = User::factory()->withConfirmedTwoFactor()->create();
+        $admin->assignRole(PycRole::SuperAdministrator->value);
+
+        $auditor = User::factory()->withConfirmedTwoFactor()->create();
+        $auditor->assignRole(PycRole::Auditor->value);
+
+        $memberUser = User::factory()->create();
+        $memberUser->assignRole(PycRole::Member->value);
+
+        // Create executive with portrait photo
+        $this->actingAs($admin)
+            ->post(route('admin.executives.store'), [
+                'full_name' => 'Rev. Fr. Anthony Mensah',
+                'position' => 'Parish Youth Chaplain',
+                'tenure' => '2026 – 2028',
+                'bio' => 'Spiritual director of St. Cecilia PYC.',
+                'sort_order' => 1,
+                'is_active' => '1',
+                'photo' => UploadedFile::fake()->image('chaplain.jpg', 500, 500),
+            ])
+            ->assertRedirect(route('admin.executives.index'));
+
+        /** @var ExecutiveProfile $exec */
+        $exec = ExecutiveProfile::query()->firstOrFail();
+        $this->assertNotNull($exec->photo_path);
+        Storage::disk('public')->assertExists($exec->photo_path);
+
+        // Public landing page displays KYE executive name, position, and photo
+        $this->get('/')
+            ->assertOk()
+            ->assertSee('Know Your Executives')
+            ->assertSee('Rev. Fr. Anthony Mensah')
+            ->assertSee('Parish Youth Chaplain')
+            ->assertSee($exec->photo_path, false);
+
+        // Auditor can view KYE admin page read-only, but cannot mutate; Member is forbidden
+        $this->actingAs($auditor)->get(route('admin.executives.index'))->assertOk();
+        $this->actingAs($auditor)->post(route('admin.executives.store'), [
+            'full_name' => 'Blocked Officer',
+            'position' => 'Vice President',
+        ])->assertForbidden();
+        $this->actingAs($memberUser)->get(route('admin.executives.index'))->assertForbidden();
+
+        // Update executive to inactive hides from public landing page
+        $this->actingAs($admin)
+            ->patch(route('admin.executives.update', $exec), [
+                'full_name' => 'Rev. Fr. Anthony Mensah',
+                'position' => 'Senior Youth Chaplain',
+                'tenure' => '2026 – 2028',
+                'sort_order' => 1,
+            ])
+            ->assertRedirect(route('admin.executives.index'));
+
+        $this->get('/')
+            ->assertOk()
+            ->assertDontSee('Senior Youth Chaplain');
+
+        // Delete removes photo from disk and row from database
+        $photoPath = $exec->photo_path;
+        $this->actingAs($admin)
+            ->delete(route('admin.executives.destroy', $exec))
+            ->assertRedirect(route('admin.executives.index'));
+
+        $this->assertDatabaseMissing('executive_profiles', ['id' => $exec->id]);
+        Storage::disk('public')->assertMissing($photoPath);
     }
 }

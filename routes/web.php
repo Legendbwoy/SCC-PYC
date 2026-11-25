@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use App\Http\Controllers\Admin\AuditLogController;
+use App\Http\Controllers\Admin\ExecutiveProfileController;
 use App\Http\Controllers\Admin\MediaGalleryController;
 use App\Http\Controllers\Admin\SystemSettingController;
 use App\Http\Controllers\Admin\UserManagementController;
@@ -22,6 +23,7 @@ use App\Http\Controllers\Portal\PaymentsPortalController;
 use App\Http\Controllers\Portal\ReportsPortalController;
 use App\Http\Controllers\Portal\SecurityProfileController;
 use App\Modules\Events\Models\PycEvent;
+use App\Support\Media\Models\ExecutiveProfile;
 use App\Support\Media\Models\MediaAsset;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Schema;
@@ -46,9 +48,18 @@ Route::get('/', static function () {
             ->get()
         : collect();
 
+    $executives = Schema::hasTable('executive_profiles')
+        ? ExecutiveProfile::query()
+            ->where('is_active', true)
+            ->orderBy('sort_order')
+            ->orderBy('id')
+            ->get()
+        : collect();
+
     return view('welcome', [
         'upcomingEvents' => $upcomingEvents,
         'publicGalleryPhotos' => $publicGalleryPhotos,
+        'executives' => $executives,
     ]);
 })->name('home');
 
@@ -206,6 +217,12 @@ Route::middleware(['auth', 'pyc.active'])->group(function (): void {
             Route::delete('/media/gallery/{mediaAsset}', [MediaGalleryController::class, 'destroyGallery'])->name('media.gallery.destroy');
             Route::post('/media/branding/{slot}', [MediaGalleryController::class, 'updateBrandingImage'])->name('media.branding.update');
             Route::delete('/media/branding/{slot}', [MediaGalleryController::class, 'removeBrandingImage'])->name('media.branding.destroy');
+
+            Route::get('/executives', [ExecutiveProfileController::class, 'index'])->name('executives.index');
+            Route::post('/executives', [ExecutiveProfileController::class, 'store'])->name('executives.store');
+            Route::patch('/executives/{executive}', [ExecutiveProfileController::class, 'update'])->name('executives.update');
+            Route::delete('/executives/{executive}/photo', [ExecutiveProfileController::class, 'removePhoto'])->name('executives.photo.destroy');
+            Route::delete('/executives/{executive}', [ExecutiveProfileController::class, 'destroy'])->name('executives.destroy');
 
             Route::get('/audit-logs', [AuditLogController::class, 'index'])->name('audit-logs.index');
         });

@@ -8,6 +8,7 @@ use App\Models\User;
 use App\Modules\Events\Models\PycEvent;
 use App\Modules\Membership\Models\Member;
 use App\Support\Audit\AuditLogger;
+use App\Support\Media\Models\ExecutiveProfile;
 use App\Support\Media\Models\MediaAsset;
 use App\Support\Shared\SystemSettingService;
 use Illuminate\Http\UploadedFile;
@@ -320,6 +321,106 @@ class MediaManagementService
         );
 
         return $member;
+    }
+
+    /**
+     * Create or update a Know Your Executives (KYE) profile and optional portrait photo.
+     *
+     * @param  array<string, mixed>  $attributes
+     */
+    public function saveExecutiveProfile(
+        ?ExecutiveProfile $profile,
+        array $attributes,
+        ?UploadedFile $photo,
+        User $actor,
+    ): ExecutiveProfile {
+        $isNew = $profile === null;
+        $oldPhotoPath = $profile?->photo_path;
+        $newPhotoPath = $oldPhotoPath;
+
+        if ($photo !== null) {
+            $stored = $photo->store('executives', 'public');
+            if ($stored === false) {
+                throw new InvalidArgumentException('Unable to store executive portrait photo.');
+            }
+            $newPhotoPath = $stored;
+        }
+
+        $payload = [
+            'full_name' => trim((string) $attributes['full_name']),
+            'position' => trim((string) $attributes['position']),
+            'tenure' => ! empty($attributes['tenure']) ? trim((string) $attributes['tenure']) : null,
+            'bio' => ! empty($attributes['bio']) ? trim((string) $attributes['bio']) : null,
+            'photo_path' => $newPhotoPath,
+            'sort_order' => isset($attributes['sort_order']) ? (int) $attributes['sort_order'] : 0,
+            'is_active' => (bool) ($attributes['is_active'] ?? true),
+            'updated_by' => $actor->id,
+        ];
+
+        if ($isNew) {
+            $profile = ExecutiveProfile::query()->create($payload);
+        } else {
+            $profile->update($payload);
+        }
+
+        if ($photo !== null && ! empty($oldPhotoPath) && $oldPhotoPath !== $newPhotoPath) {
+            $this->deleteStoredFile($oldPhotoPath);
+        }
+
+        $this->auditLogger->log(
+            event: $isNew ? 'executives.created' : 'executives.updated',
+            category: 'media',
+            description: ($isNew ? 'Added' : 'Updated')." KYE executive profile [{$profile->full_name} — {$profile->position}].",
+            auditable: $profile,
+            newValues: $profile->only(['full_name', 'position', 'tenure', 'sort_order', 'is_active', 'photo_path']),
+            actor: $actor,
+        );
+
+        return $profile;
+    }
+
+    public function removeExecutivePhoto(ExecutiveProfile $profile, User $actor): ExecutiveProfile
+    {
+        $oldPath = $profile->photo_path;
+        if (! empty($oldPath)) {
+            $profile->update([
+                'photo_path' => null,
+                'updated_by' => $actor->id,
+            ]);
+            $this->deleteStoredFile($oldPath);
+
+            $this->auditLogger->log(
+                event: 'executives.photo_removed',
+                category: 'media',
+                description: "Removed portrait photo for executive [{$profile->full_name}].",
+                auditable: $profile,
+                oldValues: ['photo_path' => $oldPath],
+                actor: $actor,
+            );
+        }
+
+        return $profile;
+    }
+
+    public function deleteExecutiveProfile(ExecutiveProfile $profile, User $actor): void
+    {
+        $oldPath = $profile->photo_path;
+        $summary = "{$profile->full_name} ({$profile->position})";
+        $id = $profile->id;
+
+        $profile->delete();
+
+        if (! empty($oldPath)) {
+            $this->deleteStoredFile($oldPath);
+        }
+
+        $this->auditLogger->log(
+            event: 'executives.deleted',
+            category: 'media',
+            description: "Deleted KYE executive profile #{$id}: {$summary}.",
+            oldValues: ['id' => $id, 'summary' => $summary, 'photo_path' => $oldPath],
+            actor: $actor,
+        );
     }
 
     private function deleteStoredFile(string $path, string $disk = 'public'): void

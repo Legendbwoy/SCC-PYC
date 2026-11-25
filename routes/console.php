@@ -13,3 +13,8 @@ Artisan::command('inspire', function (): void {
 Schedule::command('pyc:sync-google-members')
     ->everyFifteenMinutes()
     ->withoutOverlapping();
+
+Schedule::command('pyc:generate-monthly-dues')
+    ->monthlyOn(1, '00:15')
+    ->timezone('Africa/Accra')
+    ->withoutOverlapping();

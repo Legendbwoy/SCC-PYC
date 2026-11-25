@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use App\Http\Controllers\Api\V1\ContributionsApiController;
 use App\Http\Controllers\Api\V1\MembershipApiController;
 use App\Http\Controllers\Api\V1\NotificationApiController;
 use App\Http\Controllers\Api\V1\NotificationWebhookController;
@@ -9,7 +10,7 @@ use Illuminate\Support\Facades\Route;
 
 /*
 |--------------------------------------------------------------------------
-| PYC API v1 Routes (Spec Section 13.1, 13.2 & 13.6)
+| PYC API v1 Routes (Spec Section 13.1, 13.2, 13.3 & 13.6)
 |--------------------------------------------------------------------------
 */
 Route::middleware(['throttle:api'])->group(function (): void {
@@ -20,7 +21,7 @@ Route::middleware(['throttle:api'])->group(function (): void {
             'organization' => config('pyc.organization.name'),
             'currency' => config('pyc.organization.currency'),
             'timezone' => config('pyc.organization.timezone'),
-            'version' => '1.2.0-sprint2',
+            'version' => '1.2.0-sprint4',
         ],
     ]))->name('api.v1.status');
 
@@ -41,6 +42,16 @@ Route::middleware(['throttle:api'])->group(function (): void {
         Route::get('/integrations/google/status', [MembershipApiController::class, 'googleStatus']);
         Route::post('/integrations/google/sync', [MembershipApiController::class, 'googleSync']);
         Route::get('/integrations/google/logs', [MembershipApiController::class, 'googleLogs']);
+
+        // Section 13.3 Contribution & Dues endpoints
+        Route::get('/contributions/types', [ContributionsApiController::class, 'types']);
+        Route::get('/contributions/campaigns', [ContributionsApiController::class, 'campaigns']);
+        Route::post('/contributions/campaigns', [ContributionsApiController::class, 'storeCampaign']);
+        Route::patch('/contributions/campaigns/{campaign}', [ContributionsApiController::class, 'updateCampaign']);
+        Route::post('/dues/generate', [ContributionsApiController::class, 'generateDues']);
+        Route::get('/dues/member/{member}', [ContributionsApiController::class, 'memberDues']);
+        Route::get('/dues/outstanding', [ContributionsApiController::class, 'outstanding']);
+        Route::post('/dues/{obligation}/adjustments', [ContributionsApiController::class, 'storeAdjustment']);
 
         // Section 13.6 Notification endpoints
         Route::prefix('notifications')->group(function (): void {

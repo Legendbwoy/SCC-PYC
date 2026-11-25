@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Modules\Membership\Models;
 
+use App\Modules\Contributions\Models\MemberObligation;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
@@ -106,5 +107,13 @@ class Member extends Model
             ->withPivot(['role_title', 'assigned_at', 'ended_at'])
             ->wherePivotNull('ended_at')
             ->withTimestamps();
+    }
+
+    /**
+     * @return HasMany<MemberObligation, $this>
+     */
+    public function obligations(): HasMany
+    {
+        return $this->hasMany(MemberObligation::class)->orderBy('period_key');
     }
 }

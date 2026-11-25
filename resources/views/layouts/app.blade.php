@@ -41,10 +41,22 @@
         <nav class="flex-1 px-3 py-4 space-y-6 overflow-y-auto text-sm">
             <div>
                 <p class="px-3 text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2">Overview</p>
-                <a href="{{ route('dashboard') }}"
-                   class="flex items-center justify-between px-3 py-2 rounded-xl font-medium transition {{ request()->routeIs('dashboard') ? 'bg-teal-600/20 text-teal-300' : 'text-slate-300 hover:bg-slate-800 hover:text-white' }}">
-                    <span>Dashboard</span>
-                </a>
+                <div class="space-y-1">
+                    <a href="{{ route('dashboard') }}"
+                       class="flex items-center justify-between px-3 py-2 rounded-xl font-medium transition {{ request()->routeIs('dashboard') ? 'bg-teal-600/20 text-teal-300' : 'text-slate-300 hover:bg-slate-800 hover:text-white' }}">
+                        <span>Dashboard</span>
+                    </a>
+                    @if(!$isExecutive)
+                        <a href="{{ route('member.profile') }}"
+                           class="flex items-center justify-between px-3 py-2 rounded-xl font-medium transition {{ request()->routeIs('member.profile*') ? 'bg-teal-600/20 text-teal-300' : 'text-slate-300 hover:bg-slate-800 hover:text-white' }}">
+                            <span>My Member Profile</span>
+                        </a>
+                        <a href="{{ route('member.dues') }}"
+                           class="flex items-center justify-between px-3 py-2 rounded-xl font-medium transition {{ request()->routeIs('member.dues*') ? 'bg-teal-600/20 text-teal-300' : 'text-slate-300 hover:bg-slate-800 hover:text-white' }}">
+                            <span>My Dues &amp; Statement</span>
+                        </a>
+                    @endif
+                </div>
             </div>
 
             @if($isExecutive)
@@ -59,10 +71,10 @@
                             </a>
                         @endcan
                         @can('dues.view')
-                            <a href="{{ route('modules.overview', 'contributions') }}"
-                               class="flex items-center justify-between px-3 py-2 rounded-xl transition {{ request()->is('modules/contributions') ? 'bg-teal-600/20 text-teal-300' : 'text-slate-300 hover:bg-slate-800 hover:text-white' }}">
+                            <a href="{{ route('contributions.index') }}"
+                               class="flex items-center justify-between px-3 py-2 rounded-xl transition {{ request()->routeIs('contributions.*') ? 'bg-teal-600/20 text-teal-300' : 'text-slate-300 hover:bg-slate-800 hover:text-white' }}">
                                 <span>Dues &amp; Campaigns</span>
-                                <span class="text-[10px] px-1.5 py-0.5 rounded bg-slate-800 text-slate-400">S4</span>
+                                <span class="text-[10px] px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-300 font-semibold">LIVE</span>
                             </a>
                         @endcan
                         @can('payments.view')

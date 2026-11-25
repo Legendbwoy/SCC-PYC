@@ -7,8 +7,10 @@ use App\Http\Controllers\Admin\SystemSettingController;
 use App\Http\Controllers\Admin\UserManagementController;
 use App\Http\Controllers\Auth\MemberInvitationController;
 use App\Http\Controllers\Portal\CommunicationsController;
+use App\Http\Controllers\Portal\ContributionsController;
 use App\Http\Controllers\Portal\DashboardController;
 use App\Http\Controllers\Portal\GoogleSyncController;
+use App\Http\Controllers\Portal\MemberSelfServiceController;
 use App\Http\Controllers\Portal\MembershipController;
 use App\Http\Controllers\Portal\ModuleOverviewController;
 use App\Http\Controllers\Portal\NotificationPreferenceController;
@@ -41,6 +43,13 @@ Route::middleware(['auth', 'pyc.active'])->group(function (): void {
         Route::patch('/profile/notifications', [NotificationPreferenceController::class, 'update'])
             ->name('profile.notifications.update');
 
+        // Member Portal Self-Service Routes (Sprint 3)
+        Route::prefix('my')->name('member.')->group(function (): void {
+            Route::get('/profile', [MemberSelfServiceController::class, 'profile'])->name('profile');
+            Route::patch('/profile', [MemberSelfServiceController::class, 'updateProfile'])->name('profile.update');
+            Route::get('/dues', [MemberSelfServiceController::class, 'dues'])->name('dues');
+        });
+
         // Membership & Google Forms Integration (Sprint 2)
         Route::prefix('membership')->name('membership.')->group(function (): void {
             Route::get('/', [MembershipController::class, 'index'])->name('index');
@@ -60,6 +69,16 @@ Route::middleware(['auth', 'pyc.active'])->group(function (): void {
             Route::post('/{member}/reject', [MembershipController::class, 'reject'])->name('reject');
             Route::post('/{member}/archive', [MembershipController::class, 'archive'])->name('archive');
             Route::post('/{member}/invite', [MembershipController::class, 'invite'])->name('invite');
+        });
+
+        // Contributions, Monthly Dues & Obligations (Sprint 4)
+        Route::prefix('contributions')->name('contributions.')->group(function (): void {
+            Route::get('/', [ContributionsController::class, 'index'])->name('index');
+            Route::get('/obligations', [ContributionsController::class, 'obligations'])->name('obligations');
+            Route::post('/dues/generate', [ContributionsController::class, 'generateDues'])->name('dues.generate');
+            Route::post('/campaigns', [ContributionsController::class, 'storeCampaign'])->name('campaigns.store');
+            Route::post('/obligations/{obligation}/adjust', [ContributionsController::class, 'adjustObligation'])
+                ->name('obligations.adjust');
         });
 
         // Communications Hub (Milestone N1)

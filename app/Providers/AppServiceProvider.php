@@ -5,6 +5,10 @@ declare(strict_types=1);
 namespace App\Providers;
 
 use App\Models\User;
+use App\Modules\Contributions\Contracts\ObligationAllocationServiceInterface;
+use App\Modules\Contributions\Models\MemberObligation;
+use App\Modules\Contributions\Policies\MemberObligationPolicy;
+use App\Modules\Contributions\Services\ObligationAllocationService;
 use App\Modules\Membership\Contracts\GoogleSheetsClientInterface;
 use App\Modules\Membership\Models\Member;
 use App\Modules\Membership\Policies\MemberPolicy;
@@ -35,6 +39,7 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(SmsGatewayInterface::class, GenericHttpSmsGateway::class);
         $this->app->bind(EmailProviderInterface::class, SmtpEmailProvider::class);
         $this->app->bind(GoogleSheetsClientInterface::class, GoogleSheetsService::class);
+        $this->app->bind(ObligationAllocationServiceInterface::class, ObligationAllocationService::class);
     }
 
     public function boot(): void
@@ -60,6 +65,7 @@ class AppServiceProvider extends ServiceProvider
         Gate::policy(AuditLog::class, AuditLogPolicy::class);
         Gate::policy(SystemSetting::class, SystemSettingPolicy::class);
         Gate::policy(Member::class, MemberPolicy::class);
+        Gate::policy(MemberObligation::class, MemberObligationPolicy::class);
 
         Event::subscribe(SecurityEventSubscriber::class);
 

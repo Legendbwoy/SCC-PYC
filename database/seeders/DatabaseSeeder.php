@@ -15,6 +15,7 @@ class DatabaseSeeder extends Seeder
             SystemSettingsSeeder::class,
             NotificationTemplatesSeeder::class,
             MemberGroupsSeeder::class,
+            ContributionsSeeder::class,
         ]);
     }
 }

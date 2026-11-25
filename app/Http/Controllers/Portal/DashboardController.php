@@ -6,6 +6,7 @@ namespace App\Http\Controllers\Portal;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use App\Modules\Contributions\Services\OutstandingBalanceService;
 use App\Modules\Membership\Models\Member;
 use App\Support\Audit\Models\AuditLog;
 use App\Support\Security\PycPermission;
@@ -16,7 +17,7 @@ use Illuminate\Http\Request;
 
 class DashboardController extends Controller
 {
-    public function __invoke(Request $request): View
+    public function __invoke(Request $request, OutstandingBalanceService $balanceService): View
     {
         /** @var User $user */
         $user = $request->user();
@@ -28,10 +29,12 @@ class DashboardController extends Controller
 
         if (! $user->isExecutiveOfficer()) {
             $memberRecord = $user->memberAccount?->member()->with('groups')->first();
+            $statement = $memberRecord !== null ? $balanceService->memberStatement($memberRecord) : null;
 
             return view('portal.member-dashboard', [
                 'user' => $user,
                 'member' => $memberRecord,
+                'statement' => $statement,
                 'monthlyDues' => $monthlyDues,
             ]);
         }
@@ -40,9 +43,12 @@ class DashboardController extends Controller
             ? AuditLog::query()->with('actor')->latest('created_at')->limit(8)->get()
             : collect();
 
+        $duesTotals = $balanceService->totals();
+
         return view('portal.executive-dashboard', [
             'user' => $user,
             'monthlyDues' => $monthlyDues,
+            'duesTotals' => $duesTotals,
             'stats' => [
                 'active_members' => Member::query()->where('status', 'active')->count(),
                 'pending_members' => Member::query()->where('status', 'pending')->count(),

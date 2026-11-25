@@ -21,8 +21,8 @@
                 <span class="px-3 py-1 rounded-full bg-emerald-50 text-emerald-700 text-xs font-semibold capitalize">
                     {{ $member->status }} Member &bull; Joined {{ $member->joined_at?->format('d M Y') ?? '—' }}
                 </span>
-                <a href="{{ route('membership.show', $member) }}" class="text-xs font-semibold text-teal-700 hover:text-teal-800">
-                    View My Full Membership Record &rarr;
+                <a href="{{ route('member.profile') }}" class="text-xs font-semibold text-teal-700 hover:text-teal-800">
+                    Manage My Member Profile &rarr;
                 </a>
             </div>
         </div>
@@ -30,15 +30,19 @@
 
     <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
         <div class="bg-white rounded-2xl border border-slate-200 p-6 shadow-2xs">
-            <p class="text-xs font-semibold uppercase tracking-wider text-slate-500">Portal Status</p>
-            <p class="mt-2 text-xl font-bold text-emerald-700 capitalize">{{ $user->status }}</p>
-            <p class="mt-1 text-xs text-slate-500">Scoped strictly to your personal member records</p>
+            <p class="text-xs font-semibold uppercase tracking-wider text-slate-500">My Outstanding Dues</p>
+            <p class="mt-2 text-xl font-bold {{ ($statement['total_outstanding'] ?? null)?->isPositive() ? 'text-amber-700' : 'text-emerald-700' }}">
+                {{ isset($statement['total_outstanding']) ? $statement['total_outstanding']->format() : 'GHS 0.00' }}
+            </p>
+            <a href="{{ route('member.dues') }}" class="mt-1 inline-block text-xs font-semibold text-teal-700 hover:text-teal-800">
+                View full personal statement &rarr;
+            </a>
         </div>
 
         <div class="bg-white rounded-2xl border border-slate-200 p-6 shadow-2xs">
             <p class="text-xs font-semibold uppercase tracking-wider text-slate-500">Standard Monthly Dues</p>
             <p class="mt-2 text-xl font-bold text-slate-900">{{ $monthlyDues->format() }}</p>
-            <p class="mt-1 text-xs text-slate-500">Payable online via Paystack or approved cash receipt</p>
+            <p class="mt-1 text-xs text-slate-500">1,000 pesewas / month (partial &amp; advance supported)</p>
         </div>
 
         <div class="bg-white rounded-2xl border border-slate-200 p-6 shadow-2xs">
@@ -49,22 +53,6 @@
             <a href="{{ route('profile.security') }}" class="mt-1 inline-block text-xs font-semibold text-teal-700 hover:text-teal-800">
                 Update password or enable 2FA &rarr;
             </a>
-        </div>
-    </div>
-
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div class="bg-white rounded-2xl border border-slate-200 p-6 shadow-2xs">
-            <h2 class="text-base font-bold text-slate-900">My Dues, Payments &amp; Official Receipts</h2>
-            <p class="mt-2 text-sm text-slate-600 leading-relaxed">
-                Your personal dues statements, Paystack payment checkout, partial/advance allocations, and downloadable <code class="text-teal-800">PYC-RCT-*</code> PDF receipts will appear here once the Contributions &amp; Payments modules are activated.
-            </p>
-        </div>
-
-        <div class="bg-white rounded-2xl border border-slate-200 p-6 shadow-2xs">
-            <h2 class="text-base font-bold text-slate-900">Parish Youth Events &amp; Preferences</h2>
-            <p class="mt-2 text-sm text-slate-600 leading-relaxed">
-                Manage your SMS/email communication consent anytime under <a href="{{ route('profile.notifications') }}" class="font-semibold text-teal-700 underline">Alerts &amp; Consent</a>.
-            </p>
         </div>
     </div>
 @endcomponent

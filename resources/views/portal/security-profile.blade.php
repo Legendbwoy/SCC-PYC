@@ -101,6 +101,39 @@
         @endif
     </div>
 
+    <!-- Profile Avatar Photo Card -->
+    <div class="pyc-card p-6 sm:p-7 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-5">
+        <div class="flex items-center gap-4">
+            @if($user->avatarUrl())
+                <img src="{{ $user->avatarUrl() }}" alt="{{ $user->name }}" class="h-16 w-16 rounded-2xl object-cover ring-2 ring-[#0F2D59]/15 shrink-0">
+            @else
+                <div class="h-16 w-16 rounded-2xl bg-gradient-to-br from-[#0F2D59] to-[#1E549F] text-white font-extrabold text-lg flex items-center justify-center shrink-0">
+                    {{ strtoupper(substr($user->name, 0, 2)) }}
+                </div>
+            @endif
+            <div>
+                <h2 class="text-base font-extrabold text-slate-900">Profile Photo / Avatar</h2>
+                <p class="text-xs text-slate-500 mt-0.5">Displayed in your portal top navigation bar (JPG, PNG, or WEBP up to 5 MB).</p>
+            </div>
+        </div>
+
+        <div class="flex flex-wrap items-center gap-2.5">
+            <form method="POST" action="{{ route('profile.avatar.update') }}" enctype="multipart/form-data" class="flex flex-wrap items-center gap-2">
+                @csrf
+                <input type="file" name="avatar" required accept=".jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp"
+                       class="text-xs text-slate-600 file:mr-2 file:rounded-lg file:border-0 file:bg-[#0F2D59] file:px-3 file:py-1.5 file:text-xs file:font-semibold file:text-white">
+                <button type="submit" class="btn-pyc-primary py-2 px-4 text-xs">Upload Photo</button>
+            </form>
+            @if($user->avatarUrl())
+                <form method="POST" action="{{ route('profile.avatar.destroy') }}">
+                    @csrf
+                    @method('DELETE')
+                    <button type="submit" class="rounded-xl border border-rose-200 px-3 py-2 text-xs font-bold text-rose-600 hover:bg-rose-50 cursor-pointer">Remove</button>
+                </form>
+            @endif
+        </div>
+    </div>
+
     <!-- Profile & Password Grid -->
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <div class="pyc-card p-6 sm:p-7">

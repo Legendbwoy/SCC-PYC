@@ -14,9 +14,11 @@ use App\Modules\Membership\Services\MemberInvitationService;
 use App\Modules\Membership\Services\MemberRegistrationService;
 use App\Modules\Membership\Services\MemberValidationService;
 use App\Support\Audit\AuditLogger;
+use App\Support\Media\MediaManagementService;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Gate;
 
 class MembershipController extends Controller
@@ -221,5 +223,25 @@ class MembershipController extends Controller
         return redirect()
             ->route('membership.show', $member)
             ->with('status', 'New single-use portal invitation sent.');
+    }
+
+    public function updatePhoto(Request $request, Member $member, MediaManagementService $mediaService): RedirectResponse
+    {
+        Gate::authorize('update', $member);
+
+        $request->validate([
+            'photo' => ['required', 'image', 'mimes:jpg,jpeg,png,webp', 'max:5120'],
+        ]);
+
+        /** @var User $actor */
+        $actor = $request->user();
+        /** @var UploadedFile $file */
+        $file = $request->file('photo');
+
+        $mediaService->updateMemberPhoto($member, $file, $actor);
+
+        return redirect()
+            ->route('membership.show', $member)
+            ->with('status', "Updated member portrait photo for {$member->fullName()}.");
     }
 }

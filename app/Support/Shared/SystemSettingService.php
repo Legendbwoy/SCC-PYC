@@ -92,6 +92,12 @@ class SystemSettingService
      */
     public function branding(): array
     {
+        $logoPath = (string) $this->get('branding.logo_path', config('pyc.branding.logo_path', ''));
+        $faviconPath = (string) $this->get('branding.favicon_path', config('pyc.branding.favicon_path', ''));
+        $heroPath = (string) $this->get('branding.hero_image_path', '');
+        $loginBgPath = (string) $this->get('branding.login_bg_path', '');
+        $defaultEventBannerPath = (string) $this->get('branding.default_event_banner_path', '');
+
         return [
             'organization_name' => (string) $this->get('organization.name', config('pyc.organization.name')),
             'short_name' => (string) $this->get('organization.short_name', config('pyc.organization.short_name')),
@@ -104,6 +110,16 @@ class SystemSettingService
             'address' => (string) $this->get('branding.address', config('pyc.branding.address')),
             'currency' => (string) $this->get('organization.currency', config('pyc.organization.currency', 'GHS')),
             'timezone' => (string) $this->get('organization.timezone', config('pyc.organization.timezone', 'Africa/Accra')),
+            'logo_path' => $logoPath,
+            'logo_url' => $logoPath !== '' ? asset('storage/'.ltrim($logoPath, '/')) : null,
+            'favicon_path' => $faviconPath,
+            'favicon_url' => $faviconPath !== '' ? asset('storage/'.ltrim($faviconPath, '/')) : null,
+            'hero_image_path' => $heroPath,
+            'hero_image_url' => $heroPath !== '' ? asset('storage/'.ltrim($heroPath, '/')) : null,
+            'login_bg_path' => $loginBgPath,
+            'login_bg_url' => $loginBgPath !== '' ? asset('storage/'.ltrim($loginBgPath, '/')) : null,
+            'default_event_banner_path' => $defaultEventBannerPath,
+            'default_event_banner_url' => $defaultEventBannerPath !== '' ? asset('storage/'.ltrim($defaultEventBannerPath, '/')) : null,
         ];
     }
 

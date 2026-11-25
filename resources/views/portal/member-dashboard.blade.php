@@ -92,7 +92,7 @@
                     $isRegistered = $myReg && in_array($myReg->status, ['registered', 'attended'], true);
                 @endphp
                 <div class="rounded-2xl border border-slate-100 bg-slate-50/70 p-4 sm:p-5 flex flex-col sm:flex-row items-start sm:items-center gap-5">
-                    <x-pyc-event-banner class="h-36 w-full sm:w-36" />
+                    <x-pyc-event-banner :src="$nextEvent->bannerUrl()" :alt="$nextEvent->title" class="h-36 w-full sm:w-36" />
                     <div class="space-y-2 flex-1 min-w-0">
                         <h3 class="text-lg font-extrabold text-slate-900">{{ $nextEvent->title }}</h3>
                         @if($nextEvent->description)

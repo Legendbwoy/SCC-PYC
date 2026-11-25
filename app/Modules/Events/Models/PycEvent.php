@@ -6,6 +6,7 @@ namespace App\Modules\Events\Models;
 
 use App\Models\User;
 use App\Modules\Contributions\Models\ContributionCampaign;
+use App\Support\Media\Models\MediaAsset;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -19,6 +20,7 @@ class PycEvent extends Model
         'title',
         'description',
         'venue',
+        'banner_image_path',
         'starts_at',
         'ends_at',
         'registration_deadline',
@@ -59,6 +61,26 @@ class PycEvent extends Model
     public function registrations(): HasMany
     {
         return $this->hasMany(EventRegistration::class, 'event_id');
+    }
+
+    public function bannerUrl(): ?string
+    {
+        if (! empty($this->banner_image_path)) {
+            return asset('storage/'.ltrim($this->banner_image_path, '/'));
+        }
+
+        return null;
+    }
+
+    /**
+     * @return HasMany<MediaAsset, $this>
+     */
+    public function galleryPhotos(): HasMany
+    {
+        return $this->hasMany(MediaAsset::class, 'event_id')
+            ->orderByDesc('is_featured')
+            ->orderBy('sort_order')
+            ->latest('id');
     }
 
     /**

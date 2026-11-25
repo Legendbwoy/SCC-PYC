@@ -4,6 +4,9 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>{{ $pycBranding['organization_name'] ?? 'St. Cecilia Catholic Church — Parish Youth Council (PYC)' }}</title>
+    @if(!empty($pycBranding['favicon_url']))
+        <link rel="icon" href="{{ $pycBranding['favicon_url'] }}">
+    @endif
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 <body class="min-h-screen bg-[#F3F6FB] font-sans antialiased text-slate-900 pb-16 md:pb-0">
@@ -27,6 +30,7 @@
                     <a href="#home" class="text-white font-semibold hover:text-[#F5C542] transition">Home</a>
                     <a href="#about" class="hover:text-[#F5C542] transition">About</a>
                     <a href="#events" class="hover:text-[#F5C542] transition">Events</a>
+                    <a href="#gallery" class="hover:text-[#F5C542] transition">Gallery</a>
                     <a href="#membership" class="hover:text-[#F5C542] transition">Membership</a>
                     <a href="#support" class="hover:text-[#F5C542] transition">Give</a>
                     <a href="#contact" class="hover:text-[#F5C542] transition">Contact</a>
@@ -79,6 +83,9 @@
                 <div class="lg:col-span-5">
                     <div class="relative rounded-3xl bg-gradient-to-b from-sky-200/20 via-white/10 to-[#081E3F]/80 p-3 ring-1 ring-white/20 shadow-2xl backdrop-blur-sm">
                         <div class="relative overflow-hidden rounded-2xl bg-gradient-to-b from-sky-200 via-amber-100 to-emerald-800 aspect-[4/3]">
+                            @if(!empty($pycBranding['hero_image_url']))
+                                <img src="{{ $pycBranding['hero_image_url'] }}" alt="{{ $pycBranding['organization_name'] ?? 'PYC' }}" class="h-full w-full object-cover">
+                            @else
                             <svg viewBox="0 0 480 360" fill="none" xmlns="http://www.w3.org/2000/svg" class="h-full w-full" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
                                 <defs>
                                     <linearGradient id="heroSky" x1="240" y1="0" x2="240" y2="260" gradientUnits="userSpaceOnUse">
@@ -119,6 +126,7 @@
                                 <!-- Arms Around Shoulders -->
                                 <path d="M96 278H382" stroke="#0F2D59" stroke-width="9" stroke-linecap="round"/>
                             </svg>
+                            @endif
                         </div>
                     </div>
                 </div>
@@ -177,7 +185,7 @@
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 @forelse($upcomingEvents as $ev)
                     <div class="pyc-card p-5 flex gap-4 items-center">
-                        <x-pyc-event-banner class="h-24 w-24" />
+                        <x-pyc-event-banner :src="$ev->bannerUrl()" :alt="$ev->title" class="h-24 w-24" />
                         <div class="min-w-0 space-y-1.5">
                             <span class="inline-block px-2.5 py-0.5 rounded-full bg-emerald-50 text-emerald-700 text-[11px] font-semibold">
                                 Open for Registration
@@ -205,6 +213,40 @@
                 @endforelse
             </div>
         </section>
+
+        <!-- Public Event & Fellowship Photo Gallery -->
+        @if(isset($publicGalleryPhotos) && $publicGalleryPhotos->isNotEmpty())
+            <section id="gallery" class="space-y-6">
+                <div class="flex flex-wrap items-end justify-between gap-4">
+                    <div>
+                        <span class="text-xs font-bold uppercase tracking-wider text-[#1E549F]">PYC Moments</span>
+                        <h2 class="mt-1 text-2xl font-bold text-[#0B2545]">Event &amp; Fellowship Gallery</h2>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+                    @foreach($publicGalleryPhotos as $photo)
+                        <div class="pyc-card overflow-hidden group">
+                            <a href="{{ $photo->url() }}" target="_blank" rel="noopener" class="block aspect-[4/3] bg-slate-100 overflow-hidden">
+                                <img src="{{ $photo->url() }}"
+                                     alt="{{ $photo->title ?? $photo->caption ?? 'PYC Gallery' }}"
+                                     class="h-full w-full object-cover group-hover:scale-105 transition duration-300">
+                            </a>
+                            <div class="p-4 space-y-1">
+                                <p class="text-sm font-bold text-slate-900 truncate">
+                                    {{ $photo->title ?: ($photo->event?->title ?: 'St. Cecilia PYC Fellowship') }}
+                                </p>
+                                @if($photo->caption)
+                                    <p class="text-xs text-slate-500 line-clamp-2">{{ $photo->caption }}</p>
+                                @endif
+                            </div>
+                        </div>
+                    @endforeach
+                </div>
+            </section>
+        @else
+            <div id="gallery" class="sr-only"></div>
+        @endif
 
         <!-- Membership & Dues Info Grid -->
         <section id="membership" class="grid grid-cols-1 lg:grid-cols-2 gap-6">

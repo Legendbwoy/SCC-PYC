@@ -26,6 +26,7 @@ class Member extends Model
         'last_name',
         'phone',
         'email',
+        'photo_path',
         'date_of_birth',
         'gender',
         'address',
@@ -49,6 +50,15 @@ class Member extends Model
             'is_duplicate_flagged' => 'boolean',
             'duplicate_candidate_ids' => 'array',
         ];
+    }
+
+    public function photoUrl(): ?string
+    {
+        if (! empty($this->photo_path)) {
+            return asset('storage/'.ltrim($this->photo_path, '/'));
+        }
+
+        return null;
     }
 
     public function fullName(): string

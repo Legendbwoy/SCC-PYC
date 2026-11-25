@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use App\Http\Controllers\Admin\AuditLogController;
+use App\Http\Controllers\Admin\MediaGalleryController;
 use App\Http\Controllers\Admin\SystemSettingController;
 use App\Http\Controllers\Admin\UserManagementController;
 use App\Http\Controllers\Auth\MemberInvitationController;
@@ -21,6 +22,7 @@ use App\Http\Controllers\Portal\PaymentsPortalController;
 use App\Http\Controllers\Portal\ReportsPortalController;
 use App\Http\Controllers\Portal\SecurityProfileController;
 use App\Modules\Events\Models\PycEvent;
+use App\Support\Media\Models\MediaAsset;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Schema;
 
@@ -34,8 +36,19 @@ Route::get('/', static function () {
             ->get()
         : collect();
 
+    $publicGalleryPhotos = Schema::hasTable('media_assets')
+        ? MediaAsset::query()
+            ->with('event')
+            ->where('is_public', true)
+            ->orderByDesc('is_featured')
+            ->latest('id')
+            ->limit(6)
+            ->get()
+        : collect();
+
     return view('welcome', [
         'upcomingEvents' => $upcomingEvents,
+        'publicGalleryPhotos' => $publicGalleryPhotos,
     ]);
 })->name('home');
 
@@ -48,6 +61,10 @@ Route::post('/invitations/{token}', [MemberInvitationController::class, 'store']
 Route::middleware(['auth', 'pyc.active'])->group(function (): void {
     Route::get('/profile/security', [SecurityProfileController::class, 'show'])
         ->name('profile.security');
+    Route::post('/profile/avatar', [SecurityProfileController::class, 'updateAvatar'])
+        ->name('profile.avatar.update');
+    Route::delete('/profile/avatar', [SecurityProfileController::class, 'removeAvatar'])
+        ->name('profile.avatar.destroy');
 
     Route::middleware(['pyc.2fa'])->group(function (): void {
         Route::get('/dashboard', DashboardController::class)->name('dashboard');
@@ -89,6 +106,7 @@ Route::middleware(['auth', 'pyc.active'])->group(function (): void {
             Route::post('/{member}/reject', [MembershipController::class, 'reject'])->name('reject');
             Route::post('/{member}/archive', [MembershipController::class, 'archive'])->name('archive');
             Route::post('/{member}/invite', [MembershipController::class, 'invite'])->name('invite');
+            Route::post('/{member}/photo', [MembershipController::class, 'updatePhoto'])->name('photo');
         });
 
         // Contributions, Monthly Dues & Obligations (Sprint 4)
@@ -134,6 +152,8 @@ Route::middleware(['auth', 'pyc.active'])->group(function (): void {
             Route::get('/', [EventsPortalController::class, 'index'])->name('index');
             Route::post('/', [EventsPortalController::class, 'store'])->name('store');
             Route::get('/{event}', [EventsPortalController::class, 'show'])->name('show');
+            Route::post('/{event}/banner', [EventsPortalController::class, 'updateBanner'])->name('banner.update');
+            Route::delete('/{event}/banner', [EventsPortalController::class, 'removeBanner'])->name('banner.destroy');
             Route::post('/{event}/announce', [EventsPortalController::class, 'announce'])->name('announce');
             Route::post('/{event}/remind', [EventsPortalController::class, 'remind'])->name('remind');
             Route::post('/{event}/cancel', [EventsPortalController::class, 'cancel'])->name('cancel');
@@ -179,6 +199,13 @@ Route::middleware(['auth', 'pyc.active'])->group(function (): void {
 
             Route::get('/settings', [SystemSettingController::class, 'index'])->name('settings.index');
             Route::put('/settings', [SystemSettingController::class, 'update'])->name('settings.update');
+
+            Route::get('/media', [MediaGalleryController::class, 'index'])->name('media.index');
+            Route::post('/media/gallery', [MediaGalleryController::class, 'storeGallery'])->name('media.gallery.store');
+            Route::patch('/media/gallery/{mediaAsset}', [MediaGalleryController::class, 'updateGallery'])->name('media.gallery.update');
+            Route::delete('/media/gallery/{mediaAsset}', [MediaGalleryController::class, 'destroyGallery'])->name('media.gallery.destroy');
+            Route::post('/media/branding/{slot}', [MediaGalleryController::class, 'updateBrandingImage'])->name('media.branding.update');
+            Route::delete('/media/branding/{slot}', [MediaGalleryController::class, 'removeBrandingImage'])->name('media.branding.destroy');
 
             Route::get('/audit-logs', [AuditLogController::class, 'index'])->name('audit-logs.index');
         });

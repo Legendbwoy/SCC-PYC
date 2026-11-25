@@ -18,9 +18,14 @@
                     </span>
                 </div>
 
-                <div class="pt-1">
-                    <p class="text-[11px] uppercase tracking-wider text-sky-200/80 font-semibold">Member Number</p>
-                    <p class="mt-0.5 text-2xl font-mono font-extrabold tracking-wide text-[#F5C542]">{{ $member->member_number }}</p>
+                <div class="pt-1 flex items-center gap-3.5">
+                    @if($member->photoUrl())
+                        <img src="{{ $member->photoUrl() }}" alt="{{ $member->fullName() }}" class="h-14 w-14 rounded-2xl object-cover ring-2 ring-white/30 shrink-0">
+                    @endif
+                    <div>
+                        <p class="text-[11px] uppercase tracking-wider text-sky-200/80 font-semibold">Member Number</p>
+                        <p class="mt-0.5 text-2xl font-mono font-extrabold tracking-wide text-[#F5C542]">{{ $member->member_number }}</p>
+                    </div>
                 </div>
 
                 <dl class="space-y-2 text-xs border-t border-white/15 pt-4">
@@ -51,9 +56,15 @@
                 <h2 class="text-lg font-extrabold text-slate-900 mb-1">Contact &amp; Emergency Details</h2>
                 <p class="text-xs text-slate-500 mb-5">Official name and member number changes require General Secretary verification.</p>
 
-                <form method="POST" action="{{ route('member.profile.update') }}" class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <form method="POST" action="{{ route('member.profile.update') }}" enctype="multipart/form-data" class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     @csrf
                     @method('PATCH')
+
+                    <div class="sm:col-span-2">
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">Member Portrait Photo (Optional — JPG, PNG, WEBP)</label>
+                        <input type="file" name="photo" accept=".jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp"
+                               class="pyc-input py-2 text-xs file:mr-2.5 file:rounded-lg file:border-0 file:bg-[#0F2D59] file:px-3 file:py-1.5 file:text-xs file:font-semibold file:text-white">
+                    </div>
 
                     <div>
                         <label class="block text-xs font-semibold text-slate-700 mb-1">Phone Number</label>

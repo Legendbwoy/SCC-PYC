@@ -9,16 +9,19 @@ use App\Models\User;
 use App\Modules\Events\Models\EventRegistration;
 use App\Modules\Events\Models\PycEvent;
 use App\Modules\Events\Services\EventService;
+use App\Support\Media\MediaManagementService;
 use App\Support\Security\PycPermission;
 use App\Support\Shared\Money;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Http\UploadedFile;
 
 class EventsPortalController extends Controller
 {
     public function __construct(
         private readonly EventService $eventService,
+        private readonly MediaManagementService $mediaService,
     ) {}
 
     public function index(Request $request): View
@@ -31,6 +34,7 @@ class EventsPortalController extends Controller
                 ->withCount([
                     'registrations as registered_count' => static fn ($q) => $q->whereIn('status', ['registered', 'attended']),
                     'registrations as attended_count' => static fn ($q) => $q->where('status', 'attended'),
+                    'galleryPhotos as gallery_photos_count',
                 ])
                 ->orderByDesc('starts_at')
                 ->paginate(15),
@@ -41,7 +45,7 @@ class EventsPortalController extends Controller
     {
         abort_unless($request->user()?->isExecutiveOfficer(), 403);
 
-        $event->load(['contributionCampaign', 'registrations.member', 'registrations.obligation']);
+        $event->load(['contributionCampaign', 'registrations.member', 'registrations.obligation', 'galleryPhotos.uploader']);
 
         return view('portal.events.show', [
             'event' => $event,
@@ -62,6 +66,7 @@ class EventsPortalController extends Controller
             'ends_at' => ['nullable', 'date', 'after_or_equal:starts_at'],
             'capacity' => ['nullable', 'integer', 'min:1'],
             'contribution_ghs' => ['nullable', 'string', 'regex:/^\d+(?:\.\d{1,2})?$/'],
+            'banner_image' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:5120'],
         ]);
 
         $pesewas = ! empty($validated['contribution_ghs'])
@@ -70,9 +75,49 @@ class EventsPortalController extends Controller
 
         $event = $this->eventService->createEvent($validated, $actor, $pesewas);
 
+        if ($request->hasFile('banner_image')) {
+            /** @var UploadedFile $bannerFile */
+            $bannerFile = $request->file('banner_image');
+            $this->mediaService->updateEventBanner($event, $bannerFile, $actor);
+        }
+
         return redirect()
             ->route('events.show', $event)
             ->with('status', "Created event {$event->reference} ({$event->title}).");
+    }
+
+    public function updateBanner(Request $request, PycEvent $event): RedirectResponse
+    {
+        /** @var User $actor */
+        $actor = $request->user();
+        abort_unless(
+            $actor->isExecutiveOfficer() && ($actor->can(PycPermission::NotificationsSend->value) || $actor->can(PycPermission::SettingsManage->value)),
+            403
+        );
+
+        $request->validate([
+            'banner_image' => ['required', 'image', 'mimes:jpg,jpeg,png,webp', 'max:5120'],
+        ]);
+
+        /** @var UploadedFile $file */
+        $file = $request->file('banner_image');
+        $this->mediaService->updateEventBanner($event, $file, $actor);
+
+        return back()->with('status', "Updated cover flyer for {$event->title}.");
+    }
+
+    public function removeBanner(Request $request, PycEvent $event): RedirectResponse
+    {
+        /** @var User $actor */
+        $actor = $request->user();
+        abort_unless(
+            $actor->isExecutiveOfficer() && ($actor->can(PycPermission::NotificationsSend->value) || $actor->can(PycPermission::SettingsManage->value)),
+            403
+        );
+
+        $this->mediaService->removeEventBanner($event, $actor);
+
+        return back()->with('status', "Removed custom cover flyer for {$event->title}.");
     }
 
     public function announce(Request $request, PycEvent $event): RedirectResponse

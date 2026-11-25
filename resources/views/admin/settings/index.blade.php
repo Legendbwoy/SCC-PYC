@@ -75,8 +75,19 @@
             </form>
         </div>
 
-        <div class="pyc-card p-6 space-y-4 h-fit">
-            <h2 class="text-base font-extrabold text-slate-900">Protected Core Parameters</h2>
+        <div class="space-y-6">
+            <div class="pyc-card p-6 space-y-4">
+                <h2 class="text-base font-extrabold text-slate-900">Logo, Hero &amp; Event Gallery</h2>
+                <p class="text-xs text-slate-500 leading-relaxed">
+                    Upload or replace your custom Parish Youth Council crest/logo, favicon, public homepage hero photo, login backdrop, and event photo galleries.
+                </p>
+                <a href="{{ route('admin.media.index') }}" class="btn-pyc-primary w-full text-xs">
+                    Manage Images &amp; Event Gallery &rarr;
+                </a>
+            </div>
+
+            <div class="pyc-card p-6 space-y-4 h-fit">
+                <h2 class="text-base font-extrabold text-slate-900">Protected Core Parameters</h2>
             <p class="text-xs text-slate-500 leading-relaxed">
                 Financial governance parameters and provider secrets are isolated in environment configuration and cannot be weakened via UI settings.
             </p>
@@ -102,6 +113,7 @@
                     <dd class="font-semibold text-rose-700">Prohibited (Reversals Only)</dd>
                 </div>
             </dl>
+            </div>
         </div>
     </div>
 @endcomponent

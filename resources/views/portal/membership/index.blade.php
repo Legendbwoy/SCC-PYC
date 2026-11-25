@@ -144,9 +144,13 @@
                             </td>
                             <td class="px-5 py-3.5">
                                 <div class="flex items-center gap-3">
-                                    <div class="h-8 w-8 rounded-full bg-sky-100 text-[#0F2D59] font-bold text-xs flex items-center justify-center shrink-0">
-                                        {{ strtoupper(substr($item->first_name, 0, 1) . substr($item->last_name, 0, 1)) }}
-                                    </div>
+                                    @if($item->photoUrl())
+                                        <img src="{{ $item->photoUrl() }}" alt="{{ $item->fullName() }}" class="h-8 w-8 rounded-full object-cover shrink-0">
+                                    @else
+                                        <div class="h-8 w-8 rounded-full bg-sky-100 text-[#0F2D59] font-bold text-xs flex items-center justify-center shrink-0">
+                                            {{ strtoupper(substr($item->first_name, 0, 1) . substr($item->last_name, 0, 1)) }}
+                                        </div>
+                                    @endif
                                     <div>
                                         <p class="font-bold text-slate-900">{{ $item->fullName() }}</p>
                                         <div class="flex flex-wrap gap-1 mt-0.5">

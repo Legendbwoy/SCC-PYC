@@ -13,10 +13,12 @@ use App\Modules\Notifications\Services\RecipientResolver;
 use App\Modules\Payments\Models\Payment;
 use App\Modules\Payments\Services\PaymentService;
 use App\Support\Audit\AuditLogger;
+use App\Support\Media\MediaManagementService;
 use App\Support\Shared\Money;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Http\UploadedFile;
 
 class MemberSelfServiceController extends Controller
 {
@@ -25,6 +27,7 @@ class MemberSelfServiceController extends Controller
         private readonly PaymentService $paymentService,
         private readonly EventService $eventService,
         private readonly RecipientResolver $recipientResolver,
+        private readonly MediaManagementService $mediaService,
         private readonly AuditLogger $auditLogger,
     ) {}
 
@@ -54,6 +57,7 @@ class MemberSelfServiceController extends Controller
             'occupation' => ['nullable', 'string', 'max:120'],
             'emergency_contact_name' => ['nullable', 'string', 'max:150'],
             'emergency_contact_phone' => ['nullable', 'string', 'max:32'],
+            'photo' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:5120'],
         ]);
 
         $normalizedPhone = ! empty($validated['phone'])
@@ -80,6 +84,12 @@ class MemberSelfServiceController extends Controller
 
         if ($normalizedPhone !== null) {
             $user->update(['phone' => $normalizedPhone]);
+        }
+
+        if ($request->hasFile('photo')) {
+            /** @var UploadedFile $photoFile */
+            $photoFile = $request->file('photo');
+            $this->mediaService->updateMemberPhoto($member, $photoFile, $user);
         }
 
         $this->auditLogger->log(
@@ -186,13 +196,17 @@ class MemberSelfServiceController extends Controller
         $member = $user->memberAccount?->member;
 
         $events = PycEvent::query()
-            ->with(['contributionCampaign', 'registrations' => static function ($q) use ($member): void {
-                if ($member !== null) {
-                    $q->where('member_id', $member->id);
-                } else {
-                    $q->whereRaw('1 = 0');
-                }
-            }])
+            ->with([
+                'contributionCampaign',
+                'galleryPhotos' => static fn ($q) => $q->where('is_public', true),
+                'registrations' => static function ($q) use ($member): void {
+                    if ($member !== null) {
+                        $q->where('member_id', $member->id);
+                    } else {
+                        $q->whereRaw('1 = 0');
+                    }
+                },
+            ])
             ->where('status', 'published')
             ->orderBy('starts_at')
             ->get();

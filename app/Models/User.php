@@ -30,6 +30,7 @@ class User extends Authenticatable
         'name',
         'email',
         'phone',
+        'avatar_path',
         'password',
         'status',
         'must_change_password',
@@ -94,6 +95,15 @@ class User extends Authenticatable
         $role = $this->getRoleNames()->first();
 
         return $role ?? PycRole::Member->value;
+    }
+
+    public function avatarUrl(): ?string
+    {
+        if (! empty($this->avatar_path)) {
+            return asset('storage/'.ltrim($this->avatar_path, '/'));
+        }
+
+        return null;
     }
 
     /**

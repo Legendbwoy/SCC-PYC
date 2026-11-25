@@ -33,9 +33,18 @@
         <!-- Member Details -->
         <div class="lg:col-span-2 pyc-card p-6 space-y-5">
             <div class="flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 pb-4">
-                <div>
-                    <p class="text-xs text-slate-500 uppercase font-semibold">Official Member Number</p>
-                    <p class="text-lg font-mono font-bold text-[#0F2D59]">{{ $member->member_number ?? 'Assigned upon approval' }}</p>
+                <div class="flex items-center gap-3.5">
+                    @if($member->photoUrl())
+                        <img src="{{ $member->photoUrl() }}" alt="{{ $member->fullName() }}" class="h-14 w-14 rounded-2xl object-cover ring-2 ring-[#0F2D59]/15 shrink-0">
+                    @else
+                        <div class="h-14 w-14 rounded-2xl bg-sky-100 text-[#0F2D59] font-extrabold text-base flex items-center justify-center shrink-0">
+                            {{ strtoupper(substr($member->first_name, 0, 1) . substr($member->last_name, 0, 1)) }}
+                        </div>
+                    @endif
+                    <div>
+                        <p class="text-xs text-slate-500 uppercase font-semibold">Official Member Number</p>
+                        <p class="text-lg font-mono font-bold text-[#0F2D59]">{{ $member->member_number ?? 'Assigned upon approval' }}</p>
+                    </div>
                 </div>
                 <span class="px-3 py-1 rounded-full text-xs font-semibold capitalize {{ $member->status === 'active' ? 'bg-emerald-50 text-emerald-700' : ($member->status === 'pending' ? 'bg-amber-50 text-amber-800' : 'bg-slate-100 text-slate-700') }}">
                     Status: {{ $member->status }}
@@ -80,6 +89,16 @@
             </dl>
 
             @can('update', $member)
+                <form method="POST" action="{{ route('membership.photo', $member) }}" enctype="multipart/form-data" class="pt-4 border-t border-slate-100 flex flex-wrap items-center justify-between gap-3">
+                    @csrf
+                    <div>
+                        <p class="text-xs font-bold text-slate-800">Member Portrait Photo</p>
+                        <input type="file" name="photo" required accept=".jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp"
+                               class="mt-1 block text-xs text-slate-600 file:mr-2 file:rounded-lg file:border-0 file:bg-[#0F2D59] file:px-3 file:py-1.5 file:text-xs file:font-semibold file:text-white">
+                    </div>
+                    <button type="submit" class="btn-pyc-primary py-2 px-4 text-xs">Upload Photo</button>
+                </form>
+
                 <details class="pt-4 border-t border-slate-100">
                     <summary class="cursor-pointer text-xs font-bold text-[#1E549F]">Edit Member Details / Assign Youth Group</summary>
                     <form method="POST" action="{{ route('membership.update', $member) }}" class="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-3">

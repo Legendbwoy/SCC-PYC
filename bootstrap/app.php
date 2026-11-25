@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use App\Http\Middleware\ApplySecurityHeaders;
 use App\Http\Middleware\EnsureActiveUser;
 use App\Http\Middleware\EnsureAdministratorTwoFactor;
 use Illuminate\Foundation\Application;
@@ -20,6 +21,8 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
+        $middleware->append(ApplySecurityHeaders::class);
+
         $middleware->alias([
             'pyc.active' => EnsureActiveUser::class,
             'pyc.2fa' => EnsureAdministratorTwoFactor::class,

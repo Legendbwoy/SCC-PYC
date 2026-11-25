@@ -10,6 +10,9 @@ use App\Http\Controllers\Api\V1\NotificationApiController;
 use App\Http\Controllers\Api\V1\NotificationWebhookController;
 use App\Http\Controllers\Api\V1\PaymentsApiController;
 use App\Http\Controllers\Api\V1\PaystackWebhookController;
+use App\Support\Security\PycPermission;
+use App\Support\Shared\OperationalHealthService;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -37,6 +40,21 @@ Route::middleware(['throttle:api'])->group(function (): void {
         ->name('api.v1.webhooks.notifications');
 
     Route::middleware(['web', 'auth', 'pyc.active', 'pyc.2fa'])->group(function (): void {
+        Route::get('/system/health', static function (Request $request, OperationalHealthService $healthService) {
+            abort_unless(
+                $request->user()?->can(PycPermission::SettingsManage->value)
+                || $request->user()?->can(PycPermission::AuditLogsView->value),
+                403
+            );
+
+            $report = $healthService->check();
+
+            return response()->json([
+                'success' => $report['healthy'],
+                'message' => 'Operational health report generated.',
+                'data' => $report,
+            ], $report['healthy'] ? 200 : 503);
+        })->name('api.v1.system.health');
         // Section 13.2 Membership & Google Sync endpoints
         Route::get('/members', [MembershipApiController::class, 'index']);
         Route::get('/members/{member}', [MembershipApiController::class, 'show']);

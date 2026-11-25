@@ -6,6 +6,58 @@
 @source '../**/*.js';
 
 @theme {
-    --font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
-        'Segoe UI Symbol', 'Noto Color Emoji';
+    --font-sans: 'Plus Jakarta Sans', 'Instrument Sans', 'Inter', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji',
+        'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+    --font-serif: 'Georgia', 'Cambria', 'Times New Roman', serif;
+
+    --color-pyc-navy-950: #071932;
+    --color-pyc-navy-900: #0B2545;
+    --color-pyc-navy-800: #0F2D59;
+    --color-pyc-navy-700: #16407B;
+    --color-pyc-navy-600: #1E549F;
+    --color-pyc-gold-500: #F5C542;
+    --color-pyc-gold-600: #E2AF24;
+    --color-pyc-canvas: #F3F6FB;
+}
+
+@layer components {
+    .pyc-card {
+        @apply bg-white rounded-2xl border border-slate-200/80 shadow-[0_2px_12px_-4px_rgba(15,45,89,0.06)];
+    }
+
+    .pyc-kpi-blue {
+        @apply rounded-2xl border border-sky-100/90 bg-gradient-to-br from-sky-50/95 via-blue-50/60 to-white p-5 shadow-[0_2px_10px_-4px_rgba(37,99,235,0.08)];
+    }
+
+    .pyc-kpi-green {
+        @apply rounded-2xl border border-emerald-100/90 bg-gradient-to-br from-emerald-50/95 via-green-50/60 to-white p-5 shadow-[0_2px_10px_-4px_rgba(22,163,74,0.08)];
+    }
+
+    .pyc-kpi-amber {
+        @apply rounded-2xl border border-amber-100/90 bg-gradient-to-br from-amber-50/95 via-yellow-50/50 to-white p-5 shadow-[0_2px_10px_-4px_rgba(217,119,6,0.08)];
+    }
+
+    .pyc-kpi-purple {
+        @apply rounded-2xl border border-violet-100/90 bg-gradient-to-br from-violet-50/95 via-purple-50/55 to-white p-5 shadow-[0_2px_10px_-4px_rgba(124,58,237,0.08)];
+    }
+
+    .btn-pyc-primary {
+        @apply inline-flex items-center justify-center gap-2 rounded-xl bg-[#0F2D59] px-4 py-2.5 text-sm font-semibold text-white shadow-xs transition hover:bg-[#16407B] focus:outline-none focus:ring-2 focus:ring-[#1E549F]/30 cursor-pointer;
+    }
+
+    .btn-pyc-gold {
+        @apply inline-flex items-center justify-center gap-2 rounded-full bg-[#F5C542] px-6 py-2.5 text-sm font-bold text-[#0B2545] shadow-sm transition hover:bg-[#E2AF24] cursor-pointer;
+    }
+
+    .btn-pyc-green {
+        @apply inline-flex items-center justify-center gap-2 rounded-full bg-[#22C55E] px-5 py-2 text-xs font-bold text-white shadow-xs transition hover:bg-[#16A34A] cursor-pointer;
+    }
+
+    .btn-pyc-outline {
+        @apply inline-flex items-center justify-center gap-2 rounded-xl border border-[#0F2D59]/20 bg-white px-4 py-2.5 text-sm font-semibold text-[#0F2D59] transition hover:bg-sky-50/70 hover:border-[#0F2D59]/40 cursor-pointer;
+    }
+
+    .pyc-input {
+        @apply block w-full rounded-xl border border-slate-200 bg-slate-50/60 px-3.5 py-2.5 text-sm text-slate-900 placeholder:text-slate-400 transition focus:border-[#1E549F] focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#1E549F]/15;
+    }
 }

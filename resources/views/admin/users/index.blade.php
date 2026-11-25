@@ -5,8 +5,8 @@
 ])
     <div class="grid grid-cols-1 xl:grid-cols-3 gap-6">
         <!-- Create Officer / User Form -->
-        <div class="bg-white rounded-2xl border border-slate-200 p-6 shadow-2xs h-fit">
-            <h2 class="text-base font-bold text-slate-900 mb-1">Provision Council Account</h2>
+        <div class="pyc-card p-6 h-fit">
+            <h2 class="text-base font-extrabold text-slate-900 mb-1">Provision Council Account</h2>
             <p class="text-xs text-slate-500 mb-4">Officers must enable 2FA upon first sign-in.</p>
 
             <form method="POST" action="{{ route('admin.users.store') }}" class="space-y-4">
@@ -46,18 +46,16 @@
                     <input type="password" name="password_confirmation" required autocomplete="new-password"
                            class="mt-1 block w-full rounded-xl border border-slate-300 px-3 py-2 text-sm">
                 </div>
-                <button type="submit"
-                        class="w-full rounded-xl px-4 py-2.5 text-sm font-semibold text-white cursor-pointer"
-                        style="background-color: var(--pyc-primary);">
+                <button type="submit" class="btn-pyc-primary w-full">
                     Create Account
                 </button>
             </form>
         </div>
 
         <!-- Existing Accounts Table -->
-        <div class="xl:col-span-2 bg-white rounded-2xl border border-slate-200 shadow-2xs overflow-hidden">
-            <div class="px-6 py-4 border-b border-slate-200">
-                <h2 class="text-base font-bold text-slate-900">Registered Portal Accounts</h2>
+        <div class="xl:col-span-2 pyc-card overflow-hidden">
+            <div class="px-6 py-4 border-b border-slate-100">
+                <h2 class="text-base font-extrabold text-slate-900">Registered Portal Accounts</h2>
             </div>
             <div class="overflow-x-auto">
                 <table class="min-w-full divide-y divide-slate-200 text-sm">

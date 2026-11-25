@@ -44,19 +44,19 @@ class SystemSettingsSeeder extends Seeder
             ],
             'branding.tagline' => [
                 'group' => 'branding',
-                'value' => config('pyc.branding.tagline', 'Faith, Service, and Fellowship in Christ'),
+                'value' => config('pyc.branding.tagline', 'Faith · Service · Leadership'),
                 'description' => 'Portal motto or tagline placeholder',
                 'public' => true,
             ],
             'branding.primary_color' => [
                 'group' => 'branding',
-                'value' => config('pyc.branding.primary_color', '#0f766e'),
+                'value' => config('pyc.branding.primary_color', '#0F2D59'),
                 'description' => 'Primary brand hex color placeholder',
                 'public' => true,
             ],
             'branding.accent_color' => [
                 'group' => 'branding',
-                'value' => config('pyc.branding.accent_color', '#b45309'),
+                'value' => config('pyc.branding.accent_color', '#F5C542'),
                 'description' => 'Accent brand hex color placeholder',
                 'public' => true,
             ],

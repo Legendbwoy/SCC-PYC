@@ -26,14 +26,14 @@ return [
     |--------------------------------------------------------------------------
     */
     'branding' => [
-        'tagline' => env('PYC_TAGLINE', 'Faith, Service, and Fellowship in Christ'),
+        'tagline' => env('PYC_TAGLINE', 'Faith · Service · Leadership'),
         'logo_path' => env('PYC_LOGO_PATH'),
         'favicon_path' => env('PYC_FAVICON_PATH'),
-        'primary_color' => env('PYC_PRIMARY_COLOR', '#0f766e'),
-        'accent_color' => env('PYC_ACCENT_COLOR', '#b45309'),
-        'contact_email' => env('PYC_CONTACT_EMAIL', ''),
-        'contact_phone' => env('PYC_CONTACT_PHONE', ''),
-        'address' => env('PYC_ADDRESS', ''),
+        'primary_color' => env('PYC_PRIMARY_COLOR', '#0F2D59'),
+        'accent_color' => env('PYC_ACCENT_COLOR', '#F5C542'),
+        'contact_email' => env('PYC_CONTACT_EMAIL', 'pyc@stceciliagh.org'),
+        'contact_phone' => env('PYC_CONTACT_PHONE', '+233 24 000 0000'),
+        'address' => env('PYC_ADDRESS', 'St. Cecilia Catholic Church, Accra, Ghana'),
     ],
 
     /*

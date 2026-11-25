@@ -3,9 +3,9 @@
     'heading' => $module['title'],
     'subheading' => 'Roadmap Target: ' . $module['sprint'] . ' — Module Contract & Architecture Initialized',
 ])
-    <div class="bg-white rounded-2xl border border-slate-200 p-6 shadow-2xs space-y-6">
+    <div class="pyc-card p-6 space-y-6">
         <div class="flex flex-wrap items-center justify-between gap-3">
-            <span class="px-3 py-1 rounded-full bg-teal-50 text-teal-800 text-xs font-semibold">
+            <span class="px-3 py-1 rounded-full bg-sky-50 text-[#0F2D59] text-xs font-bold">
                 Scheduled in {{ $module['sprint'] }}
             </span>
             <span class="text-xs text-slate-500 font-mono">

@@ -43,7 +43,7 @@
                         <tr class="align-top">
                             <td class="px-5 py-3.5 text-xs">
                                 <p class="font-semibold text-slate-900">{{ $ob->member?->fullName() }}</p>
-                                <p class="font-mono text-teal-800">{{ $ob->member?->member_number }}</p>
+                                <p class="font-mono font-bold text-[#1E549F]">{{ $ob->member?->member_number }}</p>
                             </td>
                             <td class="px-5 py-3.5 text-xs">
                                 <p class="font-medium text-slate-800">{{ $ob->campaign?->title }}</p>
@@ -69,7 +69,7 @@
                                 @can('adjust', $ob)
                                     @if($ob->outstandingPesewas() > 0)
                                         <details class="mt-2">
-                                            <summary class="cursor-pointer text-[11px] font-semibold text-teal-700">Adjust / Waive / Exempt</summary>
+                                            <summary class="cursor-pointer text-[11px] font-bold text-[#1E549F]">Adjust / Waive / Exempt</summary>
                                             <form method="POST" action="{{ route('contributions.obligations.adjust', $ob) }}" class="mt-2 p-3 rounded-xl bg-slate-50 border border-slate-200 space-y-2">
                                                 @csrf
                                                 <select name="adjustment_type" class="block w-full rounded-lg border border-slate-300 px-2.5 py-1.5 text-xs bg-white">

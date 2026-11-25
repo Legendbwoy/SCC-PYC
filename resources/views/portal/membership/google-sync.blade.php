@@ -52,9 +52,7 @@
             @can('google_sync.run')
                 <form method="POST" action="{{ route('membership.google-sync.run') }}">
                     @csrf
-                    <button type="submit"
-                            class="w-full rounded-xl px-4 py-2.5 text-xs font-semibold text-white cursor-pointer"
-                            style="background-color: var(--pyc-primary);">
+                    <button type="submit" class="btn-pyc-primary w-full text-xs">
                         Synchronize Google Form Responses Now
                     </button>
                 </form>

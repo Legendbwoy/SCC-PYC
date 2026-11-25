@@ -26,6 +26,15 @@ class AuthenticationAndPortalAccessTest extends TestCase
     {
         $this->assertFalse(Route::has('register'));
         $this->get('/register')->assertNotFound();
+
+        $this->get('/')
+            ->assertOk()
+            ->assertSee('Parish Youth Council')
+            ->assertSee('Faith');
+
+        $this->get('/login')
+            ->assertOk()
+            ->assertSee('Welcome Back!');
     }
 
     public function test_executive_officer_without_confirmed_2fa_is_redirected_to_security_setup(): void
@@ -64,6 +73,20 @@ class AuthenticationAndPortalAccessTest extends TestCase
         $this->actingAs($admin)
             ->get(route('admin.audit-logs.index'))
             ->assertOk();
+
+        $secretary = User::factory()->withConfirmedTwoFactor()->create();
+        $secretary->assignRole(PycRole::GeneralSecretary->value);
+        $this->actingAs($secretary)
+            ->get('/dashboard')
+            ->assertOk()
+            ->assertSee('Secretary Dashboard');
+
+        $treasurer = User::factory()->withConfirmedTwoFactor()->create();
+        $treasurer->assignRole(PycRole::Treasurer->value);
+        $this->actingAs($treasurer)
+            ->get('/dashboard')
+            ->assertOk()
+            ->assertSee('Treasurer Dashboard');
     }
 
     public function test_member_accesses_only_member_portal_and_is_forbidden_from_admin_routes(): void

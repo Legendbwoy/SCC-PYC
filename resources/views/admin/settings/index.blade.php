@@ -4,8 +4,8 @@
     'subheading' => 'Manage non-secret identity and parish branding settings (Spec Section 18.1 & 18.3).',
 ])
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <div class="lg:col-span-2 bg-white rounded-2xl border border-slate-200 p-6 shadow-2xs">
-            <h2 class="text-base font-bold text-slate-900 mb-4">Parish &amp; Youth Council Identity</h2>
+        <div class="lg:col-span-2 pyc-card p-6">
+            <h2 class="text-base font-extrabold text-slate-900 mb-4">Parish &amp; Youth Council Identity</h2>
 
             <form method="POST" action="{{ route('admin.settings.update') }}" class="space-y-4">
                 @csrf
@@ -68,17 +68,15 @@
                 </div>
 
                 <div class="pt-2">
-                    <button type="submit"
-                            class="rounded-xl px-5 py-2.5 text-sm font-semibold text-white cursor-pointer"
-                            style="background-color: var(--pyc-primary);">
+                    <button type="submit" class="btn-pyc-primary px-6">
                         Save Organization Settings
                     </button>
                 </div>
             </form>
         </div>
 
-        <div class="bg-white rounded-2xl border border-slate-200 p-6 shadow-2xs space-y-4 h-fit">
-            <h2 class="text-base font-bold text-slate-900">Protected Core Parameters</h2>
+        <div class="pyc-card p-6 space-y-4 h-fit">
+            <h2 class="text-base font-extrabold text-slate-900">Protected Core Parameters</h2>
             <p class="text-xs text-slate-500 leading-relaxed">
                 Financial governance parameters and provider secrets are isolated in environment configuration and cannot be weakened via UI settings.
             </p>

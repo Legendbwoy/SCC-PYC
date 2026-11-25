@@ -51,7 +51,7 @@
                                 <p class="font-mono text-slate-500">{{ $delivery->recipient_address }}</p>
                             </td>
                             <td class="px-5 py-3.5 text-xs">
-                                <p class="font-mono text-teal-800">{{ $delivery->log?->template_code ?? ($delivery->log?->event_name ?? 'custom') }}</p>
+                                <p class="font-mono font-bold text-[#1E549F]">{{ $delivery->log?->template_code ?? ($delivery->log?->event_name ?? 'custom') }}</p>
                                 @if($delivery->templateVersion)
                                     <p class="text-[11px] text-slate-400">Version v{{ $delivery->templateVersion->version_number }}</p>
                                 @endif

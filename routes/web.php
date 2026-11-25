@@ -20,13 +20,23 @@ use App\Http\Controllers\Portal\NotificationPreferenceController;
 use App\Http\Controllers\Portal\PaymentsPortalController;
 use App\Http\Controllers\Portal\ReportsPortalController;
 use App\Http\Controllers\Portal\SecurityProfileController;
-use Illuminate\Support\Facades\Auth;
+use App\Modules\Events\Models\PycEvent;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Schema;
 
 Route::get('/', static function () {
-    return Auth::check()
-        ? redirect()->route('dashboard')
-        : redirect()->route('login');
+    $upcomingEvents = Schema::hasTable('events')
+        ? PycEvent::query()
+            ->where('status', '!=', 'cancelled')
+            ->where('starts_at', '>=', now()->subDay())
+            ->orderBy('starts_at')
+            ->limit(3)
+            ->get()
+        : collect();
+
+    return view('welcome', [
+        'upcomingEvents' => $upcomingEvents,
+    ]);
 })->name('home');
 
 Route::get('/invitations/{token}', [MemberInvitationController::class, 'show'])

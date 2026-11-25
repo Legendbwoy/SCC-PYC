@@ -4,8 +4,8 @@
     'subheading' => 'Submit council expenditure vouchers, enforce independent officer approval, and disburse to double-entry ledger.',
 ])
     @can('expenses.create')
-        <div class="bg-white rounded-2xl border border-slate-200 p-6 shadow-2xs">
-            <h2 class="text-base font-bold text-slate-900 mb-4">Record &amp; Submit Expense Voucher</h2>
+        <div class="pyc-card p-6">
+            <h2 class="text-base font-extrabold text-slate-900 mb-4">Record &amp; Submit Expense Voucher</h2>
             <form method="POST" action="{{ route('expenses.store') }}" class="grid grid-cols-1 sm:grid-cols-3 gap-4">
                 @csrf
                 <div>
@@ -40,7 +40,7 @@
                     <input type="text" name="description" required placeholder="Transport for deanery youth rally" class="mt-1 block w-full rounded-xl border border-slate-300 px-3 py-2 text-sm">
                 </div>
                 <div class="sm:col-span-3 flex justify-end">
-                    <button type="submit" class="rounded-xl px-5 py-2.5 text-xs font-semibold text-white cursor-pointer" style="background-color: var(--pyc-primary);">
+                    <button type="submit" class="btn-pyc-primary py-2.5 px-5 text-xs">
                         Submit Expense for Independent Approval
                     </button>
                 </div>
@@ -48,9 +48,9 @@
         </div>
     @endcan
 
-    <div class="bg-white rounded-2xl border border-slate-200 shadow-2xs overflow-hidden">
-        <div class="px-6 py-4 border-b border-slate-200">
-            <h2 class="text-base font-bold text-slate-900">Expense Register &amp; Approval Queue</h2>
+    <div class="pyc-card overflow-hidden">
+        <div class="px-6 py-4 border-b border-slate-100">
+            <h2 class="text-base font-extrabold text-slate-900">Expense Register &amp; Approval Queue</h2>
         </div>
         <div class="overflow-x-auto">
             <table class="min-w-full divide-y divide-slate-200 text-sm">
@@ -66,7 +66,7 @@
                 <tbody class="divide-y divide-slate-100">
                     @forelse($expenses as $exp)
                         <tr>
-                            <td class="px-5 py-3.5 font-mono text-xs font-semibold text-teal-800">
+                            <td class="px-5 py-3.5 font-mono text-xs font-bold text-[#1E549F]">
                                 {{ $exp->reference }}
                                 <span class="block text-[11px] text-slate-400">{{ $exp->expense_date->format('d M Y') }}</span>
                             </td>

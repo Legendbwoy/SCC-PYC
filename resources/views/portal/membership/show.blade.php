@@ -21,7 +21,7 @@
                             <p class="text-slate-600 font-mono">{{ $candidate->phone }} &bull; {{ $candidate->email }}</p>
                         </div>
                         @can('view', $candidate)
-                            <a href="{{ route('membership.show', $candidate) }}" class="font-semibold text-teal-700 underline">Inspect</a>
+                            <a href="{{ route('membership.show', $candidate) }}" class="font-bold text-[#1E549F] underline">Inspect</a>
                         @endcan
                     </div>
                 @endforeach
@@ -31,11 +31,11 @@
 
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <!-- Member Details -->
-        <div class="lg:col-span-2 bg-white rounded-2xl border border-slate-200 p-6 shadow-2xs space-y-5">
+        <div class="lg:col-span-2 pyc-card p-6 space-y-5">
             <div class="flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 pb-4">
                 <div>
                     <p class="text-xs text-slate-500 uppercase font-semibold">Official Member Number</p>
-                    <p class="text-lg font-mono font-bold text-teal-800">{{ $member->member_number ?? 'Assigned upon approval' }}</p>
+                    <p class="text-lg font-mono font-bold text-[#0F2D59]">{{ $member->member_number ?? 'Assigned upon approval' }}</p>
                 </div>
                 <span class="px-3 py-1 rounded-full text-xs font-semibold capitalize {{ $member->status === 'active' ? 'bg-emerald-50 text-emerald-700' : ($member->status === 'pending' ? 'bg-amber-50 text-amber-800' : 'bg-slate-100 text-slate-700') }}">
                     Status: {{ $member->status }}
@@ -71,7 +71,7 @@
                     <dt class="text-xs text-slate-500">Assigned Youth Groups / Societies</dt>
                     <dd class="mt-1 flex flex-wrap gap-1.5">
                         @forelse($member->groups as $group)
-                            <span class="px-2.5 py-1 rounded-full bg-teal-50 text-teal-800 text-xs font-medium">{{ $group->name }}</span>
+                            <span class="px-2.5 py-1 rounded-full bg-sky-50 text-[#0F2D59] text-xs font-semibold">{{ $group->name }}</span>
                         @empty
                             <span class="text-xs text-slate-400">No group assigned yet.</span>
                         @endforelse
@@ -81,7 +81,7 @@
 
             @can('update', $member)
                 <details class="pt-4 border-t border-slate-100">
-                    <summary class="cursor-pointer text-xs font-bold text-teal-700">Edit Member Details / Assign Youth Group</summary>
+                    <summary class="cursor-pointer text-xs font-bold text-[#1E549F]">Edit Member Details / Assign Youth Group</summary>
                     <form method="POST" action="{{ route('membership.update', $member) }}" class="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-3">
                         @csrf
                         @method('PATCH')
@@ -133,9 +133,7 @@
                             @csrf
                             <input type="text" name="reason" placeholder="Optional approval note..."
                                    class="block w-full rounded-xl border border-slate-300 px-3 py-2 text-xs">
-                            <button type="submit"
-                                    class="w-full rounded-xl px-4 py-2.5 text-xs font-semibold text-white cursor-pointer"
-                                    style="background-color: var(--pyc-primary);">
+                            <button type="submit" class="btn-pyc-primary w-full text-xs">
                                 Approve, Issue PYC Number &amp; Invite
                             </button>
                         </form>
@@ -213,7 +211,7 @@
                 <h2 class="text-base font-bold text-slate-900">Original Submission Payload(s)</h2>
                 @forelse($member->submissions as $sub)
                     <div class="space-y-1.5 text-xs">
-                        <p class="font-mono text-teal-800">{{ $sub->source }} &bull; {{ $sub->external_response_id }}</p>
+                        <p class="font-mono font-bold text-[#1E549F]">{{ $sub->source }} &bull; {{ $sub->external_response_id }}</p>
                         <pre class="p-3 rounded-xl bg-slate-900 text-slate-100 text-[11px] overflow-x-auto">{{ json_encode($sub->raw_payload, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES) }}</pre>
                     </div>
                 @empty

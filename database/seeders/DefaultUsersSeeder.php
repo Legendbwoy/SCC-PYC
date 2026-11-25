@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Database\Seeders;
 
 use App\Models\User;
+use App\Modules\Events\Models\PycEvent;
 use App\Modules\Membership\Enums\MemberStatus;
 use App\Modules\Membership\Models\Member;
 use App\Modules\Membership\Models\MemberAccount;
@@ -125,5 +126,39 @@ class DefaultUsersSeeder extends Seeder
                 );
             }
         }
+
+        $secretary = User::query()->where('email', 'secretary@stceciliapyc.org')->first();
+
+        PycEvent::query()->firstOrCreate(
+            ['reference' => 'PYC-EVT-'.now()->year.'-0001'],
+            [
+                'title' => 'Youth Retreat '.now()->year,
+                'description' => 'Spiritual Renewal & Parish Youth Fellowship.',
+                'venue' => 'St. Cecilia Parish Hall',
+                'starts_at' => now()->addDays(14)->setTime(9, 0),
+                'ends_at' => now()->addDays(14)->setTime(15, 0),
+                'allow_registration' => true,
+                'allow_cancellation' => true,
+                'status' => 'published',
+                'announced_at' => now(),
+                'created_by' => $secretary?->id,
+            ]
+        );
+
+        PycEvent::query()->firstOrCreate(
+            ['reference' => 'PYC-EVT-'.now()->year.'-0002'],
+            [
+                'title' => 'Youth Bible Study & General Meeting',
+                'description' => 'Monthly Scripture sharing and council updates after Sunday Mass.',
+                'venue' => 'Parish Youth Center',
+                'starts_at' => now()->addDays(28)->setTime(11, 30),
+                'ends_at' => now()->addDays(28)->setTime(13, 30),
+                'allow_registration' => true,
+                'allow_cancellation' => true,
+                'status' => 'published',
+                'announced_at' => now(),
+                'created_by' => $secretary?->id,
+            ]
+        );
     }
 }

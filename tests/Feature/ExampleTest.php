@@ -11,13 +11,18 @@ class ExampleTest extends TestCase
 {
     use RefreshDatabase;
 
-    public function test_guest_root_redirects_to_login_and_login_page_renders(): void
+    public function test_public_landing_page_and_login_page_render(): void
     {
-        $this->get('/')->assertRedirect(route('login'));
+        $this->get('/')
+            ->assertOk()
+            ->assertSee('Parish Youth Council')
+            ->assertSee('Join the PYC')
+            ->assertSee('Become a Member');
 
         $this->get(route('login'))
             ->assertOk()
-            ->assertSee('Parish Youth Council Portal');
+            ->assertSee('Welcome Back!')
+            ->assertSee('Sign in to your account');
     }
 
     public function test_api_v1_status_endpoint_returns_consistent_json(): void

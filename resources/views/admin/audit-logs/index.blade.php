@@ -3,9 +3,9 @@
     'heading' => 'Immutable System & Security Audit Trail',
     'subheading' => 'Read-only chronological record of authentication, user administration, configuration, and financial events.',
 ])
-    <div class="bg-white rounded-2xl border border-slate-200 p-4 shadow-2xs">
+    <div class="pyc-card p-4">
         <form method="GET" action="{{ route('admin.audit-logs.index') }}" class="flex flex-wrap items-center gap-3">
-            <select name="category" class="rounded-xl border border-slate-300 px-3.5 py-2 text-sm bg-white">
+            <select name="category" class="pyc-input w-auto py-2 bg-white">
                 <option value="">All Categories</option>
                 @foreach($categories as $cat)
                     <option value="{{ $cat }}" @selected($selectedCategory === $cat)>{{ ucfirst($cat) }}</option>
@@ -13,9 +13,9 @@
             </select>
 
             <input type="text" name="q" value="{{ $search }}" placeholder="Search event or description..."
-                   class="flex-1 min-w-[220px] rounded-xl border border-slate-300 px-3.5 py-2 text-sm">
+                   class="pyc-input flex-1 min-w-[220px] py-2">
 
-            <button type="submit" class="rounded-xl bg-slate-900 px-4 py-2 text-sm font-semibold text-white hover:bg-slate-800 cursor-pointer">
+            <button type="submit" class="btn-pyc-primary py-2 px-4 text-xs">
                 Filter
             </button>
 
@@ -27,7 +27,7 @@
         </form>
     </div>
 
-    <div class="bg-white rounded-2xl border border-slate-200 shadow-2xs overflow-hidden">
+    <div class="pyc-card overflow-hidden">
         <div class="overflow-x-auto">
             <table class="min-w-full divide-y divide-slate-200 text-sm">
                 <thead class="bg-slate-50 text-xs uppercase text-slate-500">
@@ -52,7 +52,7 @@
                                     {{ $log->category }}
                                 </span>
                             </td>
-                            <td class="px-5 py-3 whitespace-nowrap font-mono text-xs text-teal-800">{{ $log->event }}</td>
+                            <td class="px-5 py-3 whitespace-nowrap font-mono text-xs font-semibold text-[#1E549F]">{{ $log->event }}</td>
                             <td class="px-5 py-3 whitespace-nowrap text-xs">
                                 <p class="font-medium text-slate-800">{{ $log->actor?->name ?? 'System' }}</p>
                                 @if($log->ip_address)
@@ -63,7 +63,7 @@
                                 <p>{{ $log->description }}</p>
                                 @if($log->old_values || $log->new_values || $log->metadata)
                                     <details class="mt-1.5">
-                                        <summary class="cursor-pointer text-[11px] font-medium text-teal-700">Inspect payload</summary>
+                                        <summary class="cursor-pointer text-[11px] font-semibold text-[#1E549F]">Inspect payload</summary>
                                         <pre class="mt-1 p-2 rounded-lg bg-slate-900 text-slate-100 text-[11px] overflow-x-auto">{{ json_encode(array_filter(['old' => $log->old_values, 'new' => $log->new_values, 'meta' => $log->metadata]), JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES) }}</pre>
                                     </details>
                                 @endif

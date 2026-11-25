@@ -8,7 +8,7 @@
     @can('notifications.send_bulk')
         <div class="bg-white rounded-2xl border border-slate-200 p-6 shadow-2xs">
             <h2 class="text-base font-bold text-slate-900 mb-1">Compose Authorized Bulk Announcement</h2>
-            <p class="text-xs text-slate-500 mb-4">Dispatched onto the dedicated <code class="text-teal-800">bulk_notifications</code> queue so payment receipts are never delayed.</p>
+            <p class="text-xs text-slate-500 mb-4">Dispatched onto the dedicated <code class="text-[#0F2D59] font-semibold">bulk_notifications</code> queue so payment receipts are never delayed.</p>
 
             <form method="POST" action="{{ route('communications.campaigns.store') }}" class="space-y-4">
                 @csrf
@@ -61,9 +61,7 @@
                         </div>
                     @endcan
 
-                    <button type="submit"
-                            class="rounded-xl px-5 py-2.5 text-xs font-semibold text-white cursor-pointer"
-                            style="background-color: var(--pyc-primary);">
+                    <button type="submit" class="btn-pyc-primary py-2.5 px-5 text-xs">
                         Authorize &amp; Dispatch Campaign
                     </button>
                 </div>
@@ -89,7 +87,7 @@
                 <tbody class="divide-y divide-slate-100">
                     @forelse($campaigns as $camp)
                         <tr>
-                            <td class="px-5 py-3.5 font-mono text-xs text-teal-800">{{ $camp->reference }}</td>
+                            <td class="px-5 py-3.5 font-mono text-xs font-bold text-[#1E549F]">{{ $camp->reference }}</td>
                             <td class="px-5 py-3.5 text-xs">
                                 <p class="font-semibold text-slate-900">{{ $camp->title }}</p>
                                 <p class="text-slate-500 uppercase text-[10px]">{{ implode(', ', (array) $camp->channels) }} &bull; by {{ $camp->creator?->name }}</p>

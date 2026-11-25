@@ -25,15 +25,28 @@ Secure, auditable online management platform for **St. Cecilia Catholic Church P
 composer install
 npm install && npm run build
 
-# 2. Run database migrations & seed roles, templates, chart of accounts, periods, and GHS 10 dues campaign
+# 2. Run database migrations & seed roles, templates, chart of accounts, periods, dues campaign, and local demo users
 php artisan migrate --seed
 
-# 3. Provision one-time initial Super Administrator (no shared default password)
-php artisan pyc:provision-admin --name="PYC Super Administrator" --email="admin@stceciliapyc.org"
-
-# 4. Run formatting check & full test suite
+# 3. Run formatting check & full test suite
 ./vendor/bin/pint --test
 php artisan test
 ```
+
+## Local Seeded Test Credentials (`DefaultUsersSeeder`)
+
+All local seeded accounts use default password: **`password123`**
+
+| Role | Email | Portal |
+| :--- | :--- | :--- |
+| **Super Administrator** | `admin@stceciliapyc.org` | Executive Portal |
+| **PYC President** | `president@stceciliapyc.org` | Executive Portal |
+| **Treasurer** | `treasurer@stceciliapyc.org` | Executive Portal |
+| **Financial Secretary** | `finsec@stceciliapyc.org` | Executive Portal |
+| **General Secretary** | `secretary@stceciliapyc.org` | Executive Portal |
+| **Auditor** | `auditor@stceciliapyc.org` | Executive Portal (Read-Only) |
+| **Member** (`PYC-2026-0001`) | `member@stceciliapyc.org` | Personal Member Portal |
+
+*(Note: `DefaultUsersSeeder` skips automatically when `APP_ENV=production`; in production use `php artisan pyc:provision-admin`.)*
 
 See [ARCHITECTURE.md](ARCHITECTURE.md) for module boundaries and architectural invariants.

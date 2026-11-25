@@ -18,5 +18,9 @@ class DatabaseSeeder extends Seeder
             ContributionsSeeder::class,
             AccountingSeeder::class,
         ]);
+
+        if (! app()->runningUnitTests() && ! app()->isProduction()) {
+            $this->call(DefaultUsersSeeder::class);
+        }
     }
 }

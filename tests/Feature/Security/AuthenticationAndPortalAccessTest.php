@@ -7,6 +7,7 @@ namespace Tests\Feature\Security;
 use App\Models\User;
 use App\Support\Security\PycRole;
 use Database\Seeders\DatabaseSeeder;
+use Database\Seeders\DefaultUsersSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Route;
 use Tests\TestCase;
@@ -115,5 +116,18 @@ class AuthenticationAndPortalAccessTest extends TestCase
         $this->artisan('pyc:provision-admin', [
             '--email' => 'second@stceciliapyc.org',
         ])->assertFailed();
+    }
+
+    public function test_default_users_seeder_creates_all_role_credentials_with_password123(): void
+    {
+        $this->seed(DefaultUsersSeeder::class);
+
+        $this->post('/login', [
+            'email' => 'member@stceciliapyc.org',
+            'password' => 'password123',
+        ])->assertRedirect('/dashboard');
+
+        $this->assertAuthenticated();
+        $this->assertDatabaseCount('users', 7);
     }
 }

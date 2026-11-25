@@ -7,6 +7,8 @@ namespace App\Http\Controllers\Portal;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use App\Modules\Contributions\Services\OutstandingBalanceService;
+use App\Modules\Events\Models\PycEvent;
+use App\Modules\Events\Services\EventService;
 use App\Modules\Notifications\Services\RecipientResolver;
 use App\Modules\Payments\Models\Payment;
 use App\Modules\Payments\Services\PaymentService;
@@ -21,6 +23,7 @@ class MemberSelfServiceController extends Controller
     public function __construct(
         private readonly OutstandingBalanceService $balanceService,
         private readonly PaymentService $paymentService,
+        private readonly EventService $eventService,
         private readonly RecipientResolver $recipientResolver,
         private readonly AuditLogger $auditLogger,
     ) {}
@@ -174,5 +177,57 @@ class MemberSelfServiceController extends Controller
                 ->route('member.payments')
                 ->withErrors(['payment' => 'Could not verify online payment automatically: '.$e->getMessage()]);
         }
+    }
+
+    public function events(Request $request): View
+    {
+        /** @var User $user */
+        $user = $request->user();
+        $member = $user->memberAccount?->member;
+
+        $events = PycEvent::query()
+            ->with(['contributionCampaign', 'registrations' => static function ($q) use ($member): void {
+                if ($member !== null) {
+                    $q->where('member_id', $member->id);
+                } else {
+                    $q->whereRaw('1 = 0');
+                }
+            }])
+            ->where('status', 'published')
+            ->orderBy('starts_at')
+            ->get();
+
+        return view('portal.member.events', [
+            'member' => $member,
+            'events' => $events,
+        ]);
+    }
+
+    public function registerEvent(Request $request, PycEvent $event): RedirectResponse
+    {
+        /** @var User $user */
+        $user = $request->user();
+        $member = $user->memberAccount?->member;
+        abort_if($member === null, 403);
+
+        $this->eventService->registerMember((int) $event->id, (int) $member->id);
+
+        return redirect()
+            ->route('member.events')
+            ->with('status', "You are registered for {$event->title}!");
+    }
+
+    public function cancelEventRegistration(Request $request, PycEvent $event): RedirectResponse
+    {
+        /** @var User $user */
+        $user = $request->user();
+        $member = $user->memberAccount?->member;
+        abort_if($member === null, 403);
+
+        $this->eventService->cancelRegistration((int) $event->id, (int) $member->id, 'Cancelled via Member Portal');
+
+        return redirect()
+            ->route('member.events')
+            ->with('status', "Your registration for {$event->title} has been cancelled.");
     }
 }

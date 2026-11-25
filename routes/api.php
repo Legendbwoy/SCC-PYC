@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 use App\Http\Controllers\Api\V1\AccountingApiController;
 use App\Http\Controllers\Api\V1\ContributionsApiController;
+use App\Http\Controllers\Api\V1\EventsApiController;
 use App\Http\Controllers\Api\V1\MembershipApiController;
 use App\Http\Controllers\Api\V1\NotificationApiController;
 use App\Http\Controllers\Api\V1\NotificationWebhookController;
@@ -24,15 +25,13 @@ Route::middleware(['throttle:api'])->group(function (): void {
             'organization' => config('pyc.organization.name'),
             'currency' => config('pyc.organization.currency'),
             'timezone' => config('pyc.organization.timezone'),
-            'version' => '1.2.0-sprint6',
+            'version' => '1.2.0',
         ],
     ]))->name('api.v1.status');
 
-    // Section 13.7 Paystack HMAC-SHA512 signed webhook
     Route::post('/webhooks/paystack', PaystackWebhookController::class)
         ->name('api.v1.webhooks.paystack');
 
-    // Authenticated Notification Delivery Webhooks
     Route::post('/webhooks/notifications/{provider}', NotificationWebhookController::class)
         ->whereAlphaNumeric('provider')
         ->name('api.v1.webhooks.notifications');
@@ -89,6 +88,16 @@ Route::middleware(['throttle:api'])->group(function (): void {
         Route::post('/expenses/{expense}/approve', [AccountingApiController::class, 'approveExpense']);
         Route::post('/expenses/{expense}/reject', [AccountingApiController::class, 'rejectExpense']);
         Route::post('/expenses/{expense}/pay', [AccountingApiController::class, 'payExpense']);
+
+        // Section 9 Events & Registrations endpoints
+        Route::get('/events', [EventsApiController::class, 'index']);
+        Route::post('/events', [EventsApiController::class, 'store']);
+        Route::get('/events/{event}', [EventsApiController::class, 'show']);
+        Route::post('/events/{event}/announce', [EventsApiController::class, 'announce']);
+        Route::post('/events/{event}/cancel', [EventsApiController::class, 'cancel']);
+        Route::post('/events/{event}/register', [EventsApiController::class, 'register']);
+        Route::post('/events/{event}/cancel-registration', [EventsApiController::class, 'cancelRegistration']);
+        Route::post('/events/registrations/{registration}/attendance', [EventsApiController::class, 'markAttendance']);
 
         // Section 13.6 Notification endpoints
         Route::prefix('notifications')->group(function (): void {

@@ -10,6 +10,7 @@ use App\Http\Controllers\Portal\AccountingPortalController;
 use App\Http\Controllers\Portal\CommunicationsController;
 use App\Http\Controllers\Portal\ContributionsController;
 use App\Http\Controllers\Portal\DashboardController;
+use App\Http\Controllers\Portal\EventsPortalController;
 use App\Http\Controllers\Portal\ExpensesPortalController;
 use App\Http\Controllers\Portal\GoogleSyncController;
 use App\Http\Controllers\Portal\MemberSelfServiceController;
@@ -17,6 +18,7 @@ use App\Http\Controllers\Portal\MembershipController;
 use App\Http\Controllers\Portal\ModuleOverviewController;
 use App\Http\Controllers\Portal\NotificationPreferenceController;
 use App\Http\Controllers\Portal\PaymentsPortalController;
+use App\Http\Controllers\Portal\ReportsPortalController;
 use App\Http\Controllers\Portal\SecurityProfileController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
@@ -45,7 +47,7 @@ Route::middleware(['auth', 'pyc.active'])->group(function (): void {
         Route::patch('/profile/notifications', [NotificationPreferenceController::class, 'update'])
             ->name('profile.notifications.update');
 
-        // Member Portal Self-Service Routes (Sprint 3 & 5)
+        // Member Portal Self-Service Routes (Sprint 3, 5 & 7)
         Route::prefix('my')->name('member.')->group(function (): void {
             Route::get('/profile', [MemberSelfServiceController::class, 'profile'])->name('profile');
             Route::patch('/profile', [MemberSelfServiceController::class, 'updateProfile'])->name('profile.update');
@@ -53,6 +55,9 @@ Route::middleware(['auth', 'pyc.active'])->group(function (): void {
             Route::get('/payments', [MemberSelfServiceController::class, 'payments'])->name('payments');
             Route::post('/payments/initialize', [MemberSelfServiceController::class, 'initializePayment'])->name('payments.initialize');
             Route::get('/payments/callback', [MemberSelfServiceController::class, 'paymentCallback'])->name('payments.callback');
+            Route::get('/events', [MemberSelfServiceController::class, 'events'])->name('events');
+            Route::post('/events/{event}/register', [MemberSelfServiceController::class, 'registerEvent'])->name('events.register');
+            Route::post('/events/{event}/cancel', [MemberSelfServiceController::class, 'cancelEventRegistration'])->name('events.cancel');
         });
 
         // Membership & Google Forms Integration (Sprint 2)
@@ -112,6 +117,26 @@ Route::middleware(['auth', 'pyc.active'])->group(function (): void {
             Route::post('/{expense}/approve', [ExpensesPortalController::class, 'approve'])->name('approve');
             Route::post('/{expense}/reject', [ExpensesPortalController::class, 'reject'])->name('reject');
             Route::post('/{expense}/pay', [ExpensesPortalController::class, 'pay'])->name('pay');
+        });
+
+        // Parish Youth Events & Registrations (Sprint 7)
+        Route::prefix('events')->name('events.')->group(function (): void {
+            Route::get('/', [EventsPortalController::class, 'index'])->name('index');
+            Route::post('/', [EventsPortalController::class, 'store'])->name('store');
+            Route::get('/{event}', [EventsPortalController::class, 'show'])->name('show');
+            Route::post('/{event}/announce', [EventsPortalController::class, 'announce'])->name('announce');
+            Route::post('/{event}/remind', [EventsPortalController::class, 'remind'])->name('remind');
+            Route::post('/{event}/cancel', [EventsPortalController::class, 'cancel'])->name('cancel');
+            Route::post('/registrations/{registration}/attendance', [EventsPortalController::class, 'markAttendance'])
+                ->name('attendance');
+        });
+
+        // Executive & Auditor Reports & PDF/CSV Exports (Sprint 7)
+        Route::prefix('reports')->name('reports.')->group(function (): void {
+            Route::get('/', [ReportsPortalController::class, 'index'])->name('index');
+            Route::get('/export/{format}', [ReportsPortalController::class, 'export'])
+                ->whereIn('format', ['pdf', 'csv'])
+                ->name('export');
         });
 
         // Communications Hub (Milestone N1)

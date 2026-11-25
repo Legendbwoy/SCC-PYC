@@ -1,39 +1,39 @@
 # St. Cecilia Catholic Church — Parish Youth Council (`SCC-PYC`)
 
-Secure, auditable online management platform for **St. Cecilia Catholic Church Parish Youth Council**, built on Laravel 12, MySQL/MariaDB, Blade, Livewire, Tailwind CSS, Laravel Fortify (with TOTP 2FA), and Spatie Laravel Permission in accordance with the **PYC Complete Technical Specification (Version 1.2)**.
+Secure, auditable online management platform for **St. Cecilia Catholic Church Parish Youth Council**, implementing **PYC Complete Technical Specification (Version 1.2)** on Laravel 12, MySQL/MariaDB, Blade, Livewire, Tailwind CSS, Chart.js, DomPDF, Laravel Fortify (with TOTP 2FA), and Spatie Laravel Permission.
 
-## Milestone 1 Foundation Capabilities
+## Implemented Modules
 
-- **Modular Monolith Architecture (`app/Modules` & `app/Support`)**: Domain contracts and strict separation across `Membership`, `Contributions`, `Payments`, `Accounting`, `Expenses`, `Events`, `Notifications`, `Integrations`, and `Reporting`.
-- **Security, RBAC & 2FA**:
-  - All **7 PYC roles** (`Super Administrator`, `PYC President`, `Treasurer`, `Financial Secretary`, `General Secretary`, `Auditor`, `Member`) and **44 granular permissions** seeded.
-  - Public self-registration disabled (invitation-only member onboarding).
-  - Mandatory TOTP Two-Factor Authentication (`EnsureAdministratorTwoFactor`) for all executive/administrative roles.
-  - Explicit **Maker-Checker Guard** (`MakerCheckerGuard`) preventing any officer (including `Super Administrator`) from approving their own recorded or submitted transactions.
-- **Financial & Audit Integrity Primitives**:
-  - Immutable `Money` value object storing and formatting integer pesewas (`1000` = `GHS 10.00`).
-  - Row-locked transactional `ReferenceGenerator` (`PYC-2026-0001`, `PYC-PAY-2026-00001`, `PYC-RCT-2026-00001`, `PYC-JRN-2026-00001`, `PYC-EXP-2026-00001`, `PYC-EVT-2026-00001`, `PYC-REF-2026-00001`).
-  - Append-only `AuditLog` model & `AuditLogger` with automatic secret redaction.
-  - Non-secret `SystemSetting` & configurable Parish Youth Council branding (`SystemSettingService`).
-- **Executive Portal & Member Portal Shells**: Role-aware dashboards, 2FA enrollment/recovery UI, User & Role management, Branding configuration, and Read-Only Audit Log explorer.
+- **Foundation, Security, RBAC & 2FA (Milestone 1)**:
+  - 7 PYC roles (`Super Administrator`, `PYC President`, `Treasurer`, `Financial Secretary`, `General Secretary`, `Auditor`, `Member`) and 44 granular permissions with zero wildcard bypass on financial controls.
+  - Mandatory TOTP 2FA (`EnsureAdministratorTwoFactor`) for all executive/administrative roles, invitation-only member onboarding, append-only `AuditLog` with secret redaction, non-secret `SystemSetting`, integer-pesewas `Money` VO, and row-locked `ReferenceGenerator` (`PYC-YYYY-NNNN`, `PYC-PAY-*`, `PYC-RCT-*`, `PYC-JRN-*`, `PYC-EXP-*`, `PYC-EVT-*`, `PYC-REF-*`).
+- **SMS, Email & In-App Notifications (Milestone N1)**:
+  - Provider-independent `GenericHttpSmsGateway`, `SmtpEmailProvider`, database portal alerts, 18 versioned trigger templates (36 SMS + Email templates), GSM-7/UCS-2 segment estimator, mandatory vs optional consent separation, 5-step exponential retry queues, and HMAC-verified delivery webhooks.
+- **Membership & Google Forms Integration (Sprint 2)**:
+  - Google Sheets v4 sync (`pyc:sync-google-members` every 15m), `+233` phone/email normalization, non-destructive duplicate candidate flagging, Secretary approval/rejection, sequential `PYC-YYYY-NNNN` numbering, and SHA-256 hashed single-use portal invitations.
+- **Member Portal & Contributions / Monthly Dues (Sprint 3 & 4)**:
+  - Confirmed **GHS 10.00 (`1,000` pesewas)** Monthly Youth Dues (`pyc:generate-monthly-dues`), effective-dated campaigns, FIFO partial & automatic future-month advance payment allocations, audited waivers/exemptions, operational arrears tracking, and strict member portal isolation (`/my/profile`, `/my/dues`, `/my/payments`, `/my/events`).
+- **Payments, Receipts, Double-Entry Accounting & Expenses (Sprint 5 & 6)**:
+  - Paystack online checkout, server-side amount/currency verification, HMAC-SHA512 webhook deduplication, manual cash recording with strict `MakerCheckerGuard` dual authorization, Paystack bank settlement & refund postings, sole-authority `JournalPostingService` (`1000`–`5400` Chart of Accounts, immutable journals, traceable reversals, period closures), dual-authorized Expenses, and single-issuance DomPDF `PYC-RCT-*` official receipts.
+- **Events, Registrations & Executive/Auditor Reports (Sprint 7)**:
+  - Parish youth event publishing, capacity & attendance tracking, shared event contribution obligations (`4100`), interactive Chart.js analytics, Cash/Bank books, Trial Balance, Income & Expenditure, and user-attributed PDF & Excel-compatible CSV exports.
 
 ## Local Setup & Commands
 
 ```bash
-# 1. Run database migrations and seed roles, permissions, and branding defaults
+# 1. Install dependencies & build frontend assets
+composer install
+npm install && npm run build
+
+# 2. Run database migrations & seed roles, templates, chart of accounts, periods, and GHS 10 dues campaign
 php artisan migrate --seed
 
-# 2. Provision the initial one-time Super Administrator (no shared default password)
+# 3. Provision one-time initial Super Administrator (no shared default password)
 php artisan pyc:provision-admin --name="PYC Super Administrator" --email="admin@stceciliapyc.org"
 
-# 3. Build frontend assets
-npm run build
-
-# 4. Run automated unit and feature tests
+# 4. Run formatting check & full test suite
+./vendor/bin/pint --test
 php artisan test
-
-# 5. Start local development server
-php artisan serve
 ```
 
-See [ARCHITECTURE.md](ARCHITECTURE.md) for module boundaries and non-negotiable architectural invariants.
+See [ARCHITECTURE.md](ARCHITECTURE.md) for module boundaries and architectural invariants.

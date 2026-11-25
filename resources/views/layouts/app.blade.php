@@ -59,6 +59,10 @@
                            class="flex items-center justify-between px-3 py-2 rounded-xl font-medium transition {{ request()->routeIs('member.payments*') ? 'bg-teal-600/20 text-teal-300' : 'text-slate-300 hover:bg-slate-800 hover:text-white' }}">
                             <span>My Payments &amp; Receipts</span>
                         </a>
+                        <a href="{{ route('member.events') }}"
+                           class="flex items-center justify-between px-3 py-2 rounded-xl font-medium transition {{ request()->routeIs('member.events*') ? 'bg-teal-600/20 text-teal-300' : 'text-slate-300 hover:bg-slate-800 hover:text-white' }}">
+                            <span>Parish Youth Events</span>
+                        </a>
                     @endif
                 </div>
             </div>
@@ -102,10 +106,10 @@
                                 <span class="text-[10px] px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-300 font-semibold">LIVE</span>
                             </a>
                         @endcan
-                        <a href="{{ route('modules.overview', 'events') }}"
-                           class="flex items-center justify-between px-3 py-2 rounded-xl transition {{ request()->is('modules/events') ? 'bg-teal-600/20 text-teal-300' : 'text-slate-300 hover:bg-slate-800 hover:text-white' }}">
+                        <a href="{{ route('events.index') }}"
+                           class="flex items-center justify-between px-3 py-2 rounded-xl transition {{ request()->routeIs('events.*') ? 'bg-teal-600/20 text-teal-300' : 'text-slate-300 hover:bg-slate-800 hover:text-white' }}">
                             <span>Events</span>
-                            <span class="text-[10px] px-1.5 py-0.5 rounded bg-slate-800 text-slate-400">S7</span>
+                            <span class="text-[10px] px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-300 font-semibold">LIVE</span>
                         </a>
                         @can('notifications.view')
                             <a href="{{ route('communications.index') }}"
@@ -115,10 +119,10 @@
                             </a>
                         @endcan
                         @can('reports.view')
-                            <a href="{{ route('modules.overview', 'reports') }}"
-                               class="flex items-center justify-between px-3 py-2 rounded-xl transition {{ request()->is('modules/reports') ? 'bg-teal-600/20 text-teal-300' : 'text-slate-300 hover:bg-slate-800 hover:text-white' }}">
+                            <a href="{{ route('reports.index') }}"
+                               class="flex items-center justify-between px-3 py-2 rounded-xl transition {{ request()->routeIs('reports.*') ? 'bg-teal-600/20 text-teal-300' : 'text-slate-300 hover:bg-slate-800 hover:text-white' }}">
                                 <span>Reports &amp; Exports</span>
-                                <span class="text-[10px] px-1.5 py-0.5 rounded bg-slate-800 text-slate-400">S6</span>
+                                <span class="text-[10px] px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-300 font-semibold">LIVE</span>
                             </a>
                         @endcan
                     </div>

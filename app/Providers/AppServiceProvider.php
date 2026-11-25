@@ -12,6 +12,8 @@ use App\Modules\Contributions\Contracts\ObligationAllocationServiceInterface;
 use App\Modules\Contributions\Models\MemberObligation;
 use App\Modules\Contributions\Policies\MemberObligationPolicy;
 use App\Modules\Contributions\Services\ObligationAllocationService;
+use App\Modules\Events\Contracts\EventRegistrationServiceInterface;
+use App\Modules\Events\Services\EventService;
 use App\Modules\Expenses\Contracts\ExpenseApprovalServiceInterface;
 use App\Modules\Expenses\Services\ExpenseService;
 use App\Modules\Membership\Contracts\GoogleSheetsClientInterface;
@@ -54,6 +56,7 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(FinancialReportQueryInterface::class, FinancialReportingService::class);
         $this->app->bind(ExpenseApprovalServiceInterface::class, ExpenseService::class);
         $this->app->bind(PaymentGatewayInterface::class, PaystackService::class);
+        $this->app->bind(EventRegistrationServiceInterface::class, EventService::class);
     }
 
     public function boot(): void

@@ -92,10 +92,10 @@
                             <span class="text-[10px] px-1.5 py-0.5 rounded bg-slate-800 text-slate-400">S7</span>
                         </a>
                         @can('notifications.view')
-                            <a href="{{ route('modules.overview', 'notifications') }}"
-                               class="flex items-center justify-between px-3 py-2 rounded-xl transition {{ request()->is('modules/notifications') ? 'bg-teal-600/20 text-teal-300' : 'text-slate-300 hover:bg-slate-800 hover:text-white' }}">
+                            <a href="{{ route('communications.index') }}"
+                               class="flex items-center justify-between px-3 py-2 rounded-xl transition {{ request()->routeIs('communications.*') ? 'bg-teal-600/20 text-teal-300' : 'text-slate-300 hover:bg-slate-800 hover:text-white' }}">
                                 <span>SMS &amp; Email Notices</span>
-                                <span class="text-[10px] px-1.5 py-0.5 rounded bg-slate-800 text-slate-400">N1</span>
+                                <span class="text-[10px] px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-300 font-semibold">LIVE</span>
                             </a>
                         @endcan
                         @can('reports.view')
@@ -137,15 +137,21 @@
 
             <div>
                 <p class="px-3 text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2">Account</p>
-                <a href="{{ route('profile.security') }}"
-                   class="flex items-center justify-between px-3 py-2 rounded-xl transition {{ request()->routeIs('profile.security') ? 'bg-teal-600/20 text-teal-300' : 'text-slate-300 hover:bg-slate-800 hover:text-white' }}">
-                    <span>Security &amp; 2FA</span>
-                    @if($authUser->hasConfirmedTwoFactorAuthentication())
-                        <span class="text-[10px] px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-300 font-semibold">2FA ON</span>
-                    @elseif($authUser->requiresTwoFactor())
-                        <span class="text-[10px] px-1.5 py-0.5 rounded bg-amber-500/20 text-amber-300 font-semibold">REQUIRED</span>
-                    @endif
-                </a>
+                <div class="space-y-1">
+                    <a href="{{ route('profile.notifications') }}"
+                       class="flex items-center justify-between px-3 py-2 rounded-xl transition {{ request()->routeIs('profile.notifications*') ? 'bg-teal-600/20 text-teal-300' : 'text-slate-300 hover:bg-slate-800 hover:text-white' }}">
+                        <span>Alerts &amp; Consent</span>
+                    </a>
+                    <a href="{{ route('profile.security') }}"
+                       class="flex items-center justify-between px-3 py-2 rounded-xl transition {{ request()->routeIs('profile.security') ? 'bg-teal-600/20 text-teal-300' : 'text-slate-300 hover:bg-slate-800 hover:text-white' }}">
+                        <span>Security &amp; 2FA</span>
+                        @if($authUser->hasConfirmedTwoFactorAuthentication())
+                            <span class="text-[10px] px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-300 font-semibold">2FA ON</span>
+                        @elseif($authUser->requiresTwoFactor())
+                            <span class="text-[10px] px-1.5 py-0.5 rounded bg-amber-500/20 text-amber-300 font-semibold">REQUIRED</span>
+                        @endif
+                    </a>
+                </div>
             </div>
         </nav>
 

@@ -37,8 +37,9 @@ return [
         'driver' => env('SMS_DRIVER', 'generic_http'),
         'generic_http' => [
             'endpoint' => env('SMS_ENDPOINT', ''),
+            'status_endpoint' => env('SMS_STATUS_ENDPOINT', ''),
             'method' => env('SMS_METHOD', 'POST'),
-            'auth_type' => env('SMS_AUTH_TYPE', 'bearer'), // bearer | api_key_header | basic | custom_header
+            'auth_type' => env('SMS_AUTH_TYPE', 'bearer'), // bearer | api_key_header | basic | custom_header | none
             'api_token' => env('SMS_API_TOKEN'),
             'auth_header_name' => env('SMS_AUTH_HEADER_NAME', 'X-API-Key'),
             'basic_username' => env('SMS_BASIC_USERNAME'),
@@ -46,10 +47,16 @@ return [
             'sender_id' => env('SMS_SENDER_ID', 'SCC-PYC'),
             'timeout' => (int) env('SMS_TIMEOUT', 20),
             'encoding' => env('SMS_REQUEST_ENCODING', 'json'), // json | form
+            'custom_headers' => [],
             'fields' => [
                 'recipient' => env('SMS_RECIPIENT_FIELD', 'to'),
                 'message' => env('SMS_MESSAGE_FIELD', 'message'),
                 'sender' => env('SMS_SENDER_FIELD', 'sender'),
+            ],
+            'response_mapping' => [
+                'reference_paths' => ['message_id', 'data.message_id', 'id', 'data.id', 'reference'],
+                'status_paths' => ['status', 'data.status', 'state'],
+                'cost_pesewas_path' => 'cost_pesewas',
             ],
             'delivery_reports' => (bool) env('SMS_DELIVERY_REPORTS', false),
             'webhook_secret' => env('SMS_WEBHOOK_SECRET'),

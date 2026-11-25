@@ -5,6 +5,10 @@ declare(strict_types=1);
 namespace App\Providers;
 
 use App\Models\User;
+use App\Modules\Notifications\Contracts\EmailProviderInterface;
+use App\Modules\Notifications\Contracts\SmsGatewayInterface;
+use App\Modules\Notifications\Providers\Email\SmtpEmailProvider;
+use App\Modules\Notifications\Providers\Sms\GenericHttpSmsGateway;
 use App\Policies\AuditLogPolicy;
 use App\Policies\SystemSettingPolicy;
 use App\Policies\UserPolicy;
@@ -24,7 +28,8 @@ class AppServiceProvider extends ServiceProvider
 {
     public function register(): void
     {
-        //
+        $this->app->bind(SmsGatewayInterface::class, GenericHttpSmsGateway::class);
+        $this->app->bind(EmailProviderInterface::class, SmtpEmailProvider::class);
     }
 
     public function boot(): void

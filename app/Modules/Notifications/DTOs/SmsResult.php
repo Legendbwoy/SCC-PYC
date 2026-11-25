@@ -16,5 +16,9 @@ final readonly class SmsResult
         public ?string $errorMessage = null,
         public bool $retryable = false,
         public array $rawResponse = [],
+        public ?int $costPesewas = null,
+        public ?string $costCurrency = null,
+        public bool $isAuthFailure = false,
+        public bool $isAmbiguousTimeout = false,
     ) {}
 }
